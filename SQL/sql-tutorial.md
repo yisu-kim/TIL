@@ -95,7 +95,7 @@ WHERE conditional_statement;
 
 
 
-### DESC(describe)
+### DESC
 
 
 테이블 구조를 참조한다.
@@ -162,13 +162,170 @@ DESC table_name;
 문자열의 일부분을 비교하는 패턴 매칭(부분 검색)
 
 ```sql
-column_name LIKE 'pattern'
+SELECT *
+FROM table_name
+WHERE column_name LIKE 'pattern'
 ```
 
 - `LIKE`: LIKE 술어의 왼쪽에는 매칭 대상을 지정하고 오른쪽에는 비교할 패턴을 문자열로 지정한다.
 - `pattern`: 패턴을 정의할 때 다음과 같은 메타문자를 사용할 수 있다.
   - `%(percent)`: 임의의 문자열. 사용 위치에 따라 전방 일치, 중간 일치, 후방 일치로 검색이 가능하다.
   - `_(underscore)`: 임의의 문자 하나
+
+
+
+## 03 정렬과 연산
+
+### ORDER BY
+
+```sql
+SELECT *
+FROM table_name
+WHERE conditional_statement
+ORDER BY column1_name, column2_name;
+```
+
+- `ORDER BY`: ORDER BY 구를 사용하면 검색결과의 행 순서를 정렬할 수 있다.
+- `column_name`: 정렬 기준으로 삼을 열을 지정한다.
+  - 정렬방법의 기본값은 `ASC(ascendant)`로 오름차순이다. 반대로 `DESC(descendant)`를 사용하면 내림차순으로 정렬한다.
+  - comma(,)로 열을 구분하면 복수의 열을 지정하여 정렬할 수 있다. 값이 같을 경우 다음으로 지정한 열을 기준으로 정렬한다.
+
+NULL 값을 가지는 행은 가장 먼저 표시되거나 가장 나중에 표시된다. 이는 표준 SQL에 규정되어 있지 않아 데이터베이스 제품마다 다르다. MySQL의 경우 NULL을 가장 작은 값으로 취급한다.
+
+
+
+### LIMIT
+
+표준 SQL이 아닌 MySQL과 PostgreSQL에서 사용할 수 있는 방언이다.
+
+```sql
+SELECT *
+FROM table_name
+WHERE conditional_statement
+ORDER BY column_name
+LIMIT number_of_rows
+OFFSET location;
+```
+
+- `LIMIT`: LIMIT구를 통해 검색 결과에서 반환할 행수를 제한할 수 있다.
+- `OFFSET`: 반환을 시작할 위치를 지정한다. OFFSET은 생략 가능하며 기본값은 0이다.
+
+다른 표현 방법도 있다. `LIMIT 3 OFFSET 3 = LIMIT 3,3`
+
+
+
+### 수치 연산
+
+```sql
+SELECT expression
+FROM table_name
+WHERE expression
+ORDER BY expression;
+```
+
+- `expression`
+  - 열 뿐만 아니라 연산자와 상수를 이용하여 식을 기술할 수 있다.
+  - 이때, 일반적으로 내부적인 처리 순서는 WHERE -> SELECT -> ORDER BY 순서이다.
+
+NULL 값과 상수를 연산할 경우 NULL 값이 0으로 처리되지 않기 때문에 계산 결과는 NULL이 된다.
+
+
+
+### ROUND()
+
+반올림하는 함수
+
+```sql
+ROUND(number, decimal_places)
+```
+
+- `decimal_places`: 반올림할 자릿수. 기본값을 0으로 소수점 첫째 자리를 기준으로 반올림 한다. 음수를 사용하여 정수부의 반올림할 자릿수도 지정할 수 있다.
+
+
+
+### 별칭
+
+```sql
+SELECT column_name AS alias
+FROM table_name;
+```
+
+- `AS`: 식에 별칭을 붙일 수 있다. 가급적 중복되지 않는 별칭을 사용하도록 한다. 키워드인 `AS`는 생략할 수 있다.
+- `alias`: 별칭을 지정할 때 ASCII 문자인 영어, 숫자 등을 제외하고 한글로 지정할 경우 double quotes(" ")로 둘러싸야 한다.
+
+
+
+### 문자열 결합
+
+2개의 열 데이터를 모아 1개의 열로 처리하고 싶은 경우 자주 사용한다.
+
+| 연산자/함수 | 데이터베이스            |
+| ----------- | ----------------------- |
+| +           | SQL Server              |
+| \|\|        | Oracle, DB2, PostgreSQL |
+| CONCAT()    | MySQL                   |
+
+
+
+### SUBSTRING() / SUBSTR()
+
+문자열의 일부분을 계산해서 반환해주는 함수
+
+```sql
+SUBSTRING(string, start_pos, number_of_chars)
+```
+
+- `start_pos`: 추출하고 싶은 시작 위치
+- `number_of_chars`: 시작위치부터 추출해낼 문자 개수
+
+
+
+### TRIM()
+
+문자열 앞 뒤로 여분의 스페이스를 제거하는 함수. 고정길이 문자열형에 대해 많이 사용한다.
+
+```sql
+TRIM(string)
+```
+
+
+
+### CURRENT_TIMESTAMP
+
+시스템 날짜와 시간을 확인하는 함수
+
+```sql
+SELECT CURRENT_TIMESTAMP;
+```
+
+
+
+### 날짜 연산
+
+```sql
+SELECT CURRENT_DATE + INTERVAL number DAY/MONTH/YEAR
+```
+
+- `INTERVAL `: 기간형 상수를 서술하기 위한 키워드. `+` 또는 `-`를 사용하여 기간형 수치데이터를 더하거나 뺄 수 있다.
+
+날짜시간형 데이터 간에도 뺄셈을 통해 두 날짜 사이에 발생하는 시간차를 계산할 수 있다. MySQL의 경우 `DATEDIFF()` 함수를, Oracle의 경우 `-` 를 사용하면 된다.
+
+
+
+### CASE
+
+```sql
+CASE WHEN conditional_statement1 THEN expression1
+	[WHEN conditional_statement2 THEN expression2]
+	[ELSE expression3]
+END AS alias
+```
+
+- `WHEN ~ THEN`: WHERE 절의 조건식이 참일 경우 THEN 절에 기술한 식이 처리된다.
+- `ELSE`: 그 어떤 조건식도 만족하지 못한 경우 ELSE 절에 기술한 식이 채택된다. ELSE는 생략 가능하며 그 경우 ELSE NULL로 간주된다.
+- `AS`: CASE 문에도 별칭을 붙일 수 있다.
+
+SELECT, WHERE, ORDER BY 등 어디에서나 사용할 수 있다.
 
 
 
