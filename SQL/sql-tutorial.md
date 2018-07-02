@@ -329,6 +329,46 @@ SELECT, WHERE, ORDER BY 등 어디에서나 사용할 수 있다.
 
 
 
+## 04 데이터의 추가, 삭제, 갱신
+
+### INSERT
+
+```sql
+INSERT INTO table_name(column1, column2, ...)
+VALUES(value1, value2, ...);
+```
+
+- `INSERT INTO`: INSERT 명령을 사용하면 테이블에 행 단위로 데이터를 추가할 수 있다.
+- `column`: 값을 저장할 열을 지정할 수 있다.
+- `VALUES`: VALUES 구에서 테이블 구조에 맞춰 추가할 데이터를 기술한다.
+- `value`: 해당 열의 데이터 타입에 맞춘다. 특정 열에만 데이터를 추가할 경우 해당 열과 데이터 간의 위치가 동일해야 한다.
+
+
+
+### DELETE
+
+```sql
+DELETE FROM table_name
+WHERE conditional_statement;
+```
+
+- `DELETE FROM`: 삭제하길 원하는 테이블명을 사용해 데이터를 삭제할 수 있다. WHERE 구를 생략할 경우 테이블의 모든 데이터가 삭제된다.
+
+
+
+### UPDATE
+
+```sql
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE conditional_statement;
+```
+
+- `UPDATE`: UPDATE를 통해 데이터를 갱신할 수 있다.
+- `SET`: 갱신을 원하는 열에 값을 대입한다. 상수값만 대입할 수 있는 것이 아니라 해당 열을 이용한 연산(ex. no = no + 1)도 가능하다. WHERE 구를 생략하면 해당 열의 모든 행이 갱신된다.
+
+
+
 
 
 ## Refer.
