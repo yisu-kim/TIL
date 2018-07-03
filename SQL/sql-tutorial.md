@@ -371,6 +371,187 @@ WHERE conditional_statement;
 
 
 
+## 05 집계와 서브쿼리
+
+집계함수는 복수의 값(집합)에서 하나의 스칼라 값을 계산하여 반환한다.
+
+단, 집합 안에 NULL 값이 있을 경우 이를 무시한다.
+
+### COUNT()
+
+인수로 지정된 집합의 개수를 계산한다.
+
+```sql
+COUNT([ALL|DISTINCT] expression)
+
+-- count number of rows
+SELECT COUNT(*) FROM table;
+```
+
+
+
+### DISTINCT
+
+집합을 다룰 때, 중복값이 있는지 여부가 문제가 된다. 이러한 중복된 값을 제거하는 키워드이다.
+
+DISTINCT를 생략한 경우 ALL로 간주되어 중복된 값을 포함한 전체 결과를 표시한다.
+
+```sql
+SELECT DISTINCT column FROM table;
+```
+
+
+
+COUNT() 함수와 DISTINCT 키워드를 결합하여 중복되지 않는 데이터를 구하는 방법은 다음과 같다.
+
+```sql
+SELECT COUNT(DISTINCT column) FROM table;
+```
+
+
+
+### SUM()
+
+수치형 데이터의 합계를 구한다. NULL 값은 무시한다.
+
+```sql
+SUM([ALL|DISTINCT] expression)
+```
+
+
+
+### AVG()
+
+수치형 데이터의 평균값을 구한다. NULL 값은 무시한다.
+
+```sql
+AVG([ALL|DISTINCT] expression)
+
+-- convert NULL to 0
+SELECT AVG(CASE WHEN column IS NULL THEN 0 ELSE column END) AS alias
+FROM table;
+```
+
+
+
+### MIN()
+
+최솟값을 구한다. 수치형뿐만 아니라 문자열형과 날짜시간형에도 사용할 수 있다. NULL 값은 무시한다.
+
+```sql
+MIN([ALL|DISTINCT] expression)
+```
+
+
+
+### MAX()
+
+최댓값을 구한다. 수치형뿐만 아니라 문자열형과 날짜시간형에도 사용할 수 있다. NULL 값은 무시한다.
+
+```sql
+MAX([ALL|DISTINCT] expression)
+```
+
+
+
+### GROUP BY
+
+집계함수로 넘겨줄 집합을 그룹으로 나눌 수 있다.
+
+GROUP BY 구에 열을 지정하면 지정된 열의 값이 같은 행이 하나의 그룹으로 묶인다. 이때문에 DISTINCT 처럼 중복을 제거하는 효과가 있다.
+
+GROUP BY에 지정한 열 이외의 열은 집계함수 없이 SELECT 구에 기술할 수 없다. 따라서 필요하다면 복수의 열을 GROUP BY 구에 지정하면 된다.
+
+```sql
+SELECT *
+FROM table
+GROUP BY column1, column2, ...;
+
+-- use count(), sum() with group by
+SELECT COUNT(column1), SUM(column2)
+FROM table
+GROUP BY column1;
+```
+
+
+
+### HAVING
+
+집계함수를 WHERE 조건식에서 사용할 수 없기 때문에 HAVING 구를 대신 사용한다.
+
+```sql
+SELECT COUNT(column)
+FROM table
+GROUP BY column
+HAVING expression
+```
+
+
+
+그 밖에 ORDER BY 구 등에서는 집계함수를 사용할 수 있다.
+
+```sql
+SELECT COUNT(column1)
+FROM table
+GROUP BY column1
+ORDER BY SUM(column2) DESC;
+```
+
+
+
+내부처리 순서는 다음과 같다.
+
+> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY
+
+
+
+### SUBQUERY
+
+하부 명령으로 괄호로 묶어 지정한다. SELECT 구 외에도 FROM 구, WEHERE 구 등 각 구에서 서브쿼리를 사용할 수 있다.
+
+```sql
+(SELECT ...)
+```
+
+#### pattern
+
+- single row: 하나의 값(스칼라 값) 반환
+- multiple row: 복수의 행과 하나의 열 반환
+- multiple column: 하나의 행과 복수의 열 반환
+- table: 복수의 행과 복수의 열 반환
+
+
+
+스칼라 값을 반환하는 '스칼라 서브쿼리'의 경우 `=` 연산자를 사용하여 비교한다. 또한, WHERE 구에서 집계함수를 사용해 집계한 결과를 조건식으로 사용할 수 있다.
+
+
+
+### EXISTS
+
+데이터가 존재하는지 아닌지를 판별하는 데 사용하는 술어이다. 반환하는 값은 참 또는 거짓이다.
+
+```sql
+EXISTS (SELECT ...)
+```
+
+
+
+### IN
+
+스칼라 값을 비교하는 데 사용하는 `=` 연산자와 달리 집합을 비교할 때는 `IN`을 사용한다.
+
+왼쪽에 지정된 값과 같은 값이 집합 안에 존재하면 참을 반환한다.
+
+NULL 값을 무시하지 않지만 NULL 값은 `IS NULL`로만 비교할 수 있다.
+
+```sql
+column IN(expression)
+```
+
+
+
+
+
 ## Refer.
 
 -   SQL 첫걸음, 아사이 아츠시
