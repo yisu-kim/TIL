@@ -552,6 +552,150 @@ column IN(expression)
 
 
 
+## 06 데이터베이스 객체 작성과 삭제
+
+### CREATE
+
+테이블을 생성한다.
+
+```sql
+CREATE TABLE table_name (
+    column1 datatype [DEFAULT value] [NULL|NOT NULL],
+    column2 datatype [DEFAULT value] [NULL|NOT NULL]
+);
+```
+
+
+
+### DROP
+
+테이블을 삭제한다.
+
+```sql
+DROP TABLE table_name;
+
+
+-- 데이터 전체 행 삭제
+-- DELETE 명령어와 달리 WHERE 조건 지정 불가
+TRUNCATE TABLE table_name;
+```
+
+
+
+### ALTER
+
+테이블을 변경한다.
+
+```sql
+ALTER TABLE table_name command
+
+-- ADD
+ALTER TABLE table_name
+ADD column datatype;
+
+-- MODIFY
+ALTER TABLE table_name
+MODIFY column datatype;
+
+-- CHANGE
+ALTER TABLE table_name
+CHANGE old_name new_name [datatype];
+
+-- DROP
+ALTER TABLE table_name
+DROP column;
+```
+
+
+
+### CONSTRAINTS
+
+제약을 설정함으로써 저장될 데이터를 제한할 수 있다.
+
+다음과 같은 제약이 주로 사용된다.
+
+- NOT NULL
+- UNIQUE
+- PRIMARY KEY
+- FOREIGN KEY
+- CHECK
+- DEFAULT
+- INDEX
+
+```sql
+-- when a table is created
+CREATE TABLE table_name (
+    column1 datatype constraint,
+    column2 datatype constraint
+);
+
+-- CONSTRAINT constraint_name
+CREATE TABLE sample (
+    no INTEGER NOT NULL,
+    sub_no INTEGER NOT NULL,
+    name VARCHAR(30) UNIQUE,
+    CONSTRAINT pkey PRIMARY KEY(no, sub_no)
+);
+
+-- after a table is created
+-- add constraint
+ALTER TABLE table_name
+MODIFY column_name datatype constraint;
+
+ALTER TABLE table_name
+ADD CONSTRAINT constraint_name constraint;
+
+-- delete constraint
+ALTER TALBE table_name
+MODIFY column_name datatype;
+
+ALTER TABLE table_name
+DROP CONSTRAINT constraint_name;
+
+-- delete primary key
+ALTER TABLE table_name
+DROP PRIMARY KEY;
+```
+
+
+
+### INDEX
+
+테이블에 붙여진 색인
+
+이를 통해 검색 속도의 향상을 기대할 수 있다. '이진 트리' 또는 '해시' 알고리즘을 사용한다.
+
+테이블에 의존하므로 테이블을 삭제하면 자동으로 삭제된다.
+
+```sql
+CREATE INDEX index_name ON table_name (column1, column2);
+-- schema object
+DROP INDEX index_name;
+-- table object
+DROP INDEX index_name ON table_name;
+```
+
+
+
+### VIEW
+
+뷰는 데이터베이스 객체가 아닌 SELECT 명령을 객체로서 이름 붙여 관리할 수 있도록 한 것
+
+가상 테이블이라고도 불린다. 하지만 실제 테이블과 달리 대량의 저장공간을 필요로 하지 않는데 이는 실제 저장되는 것은 SELECT 명령이기 때문이다.
+
+서브쿼리에서 사용하면 가독성을 높일 수 있다.
+
+```sql
+CREATE VIEW view_name (column1, column2) AS SELECT ...;
+DROP VIEW view_name;
+```
+
+뷰의 열 지정을 생략한 경우 SELECT 명령에서 지정한 열 정보가 자동으로 지정된다. 생략하지 않은 경우 SELECT 명령의 열보다 우선된다.
+
+
+
+
+
 ## Refer.
 
 -   SQL 첫걸음, 아사이 아츠시
