@@ -694,9 +694,81 @@ DROP VIEW view_name;
 
 
 
+## 07 복수의 테이블 다루기
+
+### UNION
+
+SELECT 명령어를 집합으로 간주하고 두 집합의 합집합 결과를 얻을 수 있다.
+
+```sql
+SELECT * FROM table1
+UNION
+SELECT * FROM table2;
+
+-- remain duplicate values
+SELECT * FROM table1
+UNION ALL
+SELECT * FROM table2;
+```
+
+*(asterisk) 대신 특정 열을 지정할 수도 있다.
+
+
+
+### JOIN
+
+#### Cross join
+
+교차결합은 곱집합(cartesian product) 개념과 같다.
+
+세로 방향으로 확장되는 UNION과 달리 가로 방향으로 확장된다.
+
+```sql
+SELECT * FROM table1, table2;
+```
+
+
+
+#### INNER JOIN
+
+교차결합으로 계산된 곱집합에서 원하는 조합을 검색한다.
+
+```sql
+SELECT *
+FROM table1 INNER JOIN table2
+ON conditional_expr;
+```
+
+
+
+#### SELF JOIN
+
+테이블에 별명을 붙여 동일한 테이블끼리 결합한다. 따로 키워드가 있는 것은 아니다.
+
+```sql
+SELECT *
+FROM table t1 INNER JOIN table t2
+ON t1.primary_key = t2.primary_key
+```
+
+
+
+#### LEFT / RIGHT JOIN
+
+외부결합은 어느 한 쪽에만 존재하는 데이터행을 다룰 때 사용한다.
+
+결합의 기준에 따라 LEFT 또는 RIGHT 방향을 선택한다.
+
+
+
 
 
 ## Refer.
 
--   SQL 첫걸음, 아사이 아츠시
--   빅데이터 교육
+- SQL 첫걸음, 아사이 아츠시
+
+- 빅데이터 교육
+
+- [MySQL 5.7 Reference Manual](https://dev.mysql.com/doc/refman/5.7/en)
+
+  
