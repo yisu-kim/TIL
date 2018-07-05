@@ -767,8 +767,6 @@ ON t1.primary_key = t2.primary_key
 
 - SQL 첫걸음, 아사이 아츠시
 
-- 빅데이터 교육
-
 - [MySQL 5.7 Reference Manual](https://dev.mysql.com/doc/refman/5.7/en)
 
   
