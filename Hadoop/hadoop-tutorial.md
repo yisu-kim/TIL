@@ -192,7 +192,7 @@ $ scp * Server03:/home/hadoop/hadoop-1.2.1/conf/
 
 4. 하둡은 HDFS 정보를 확인할 수 있는 웹 인터페이스를 제공한다. http://Server01:50070으로 접근할 수 있다. IP가 아닌 호스트명으로 접근하기 위해서는 hosts 파일 설정이 필요하다.
 
-   ![](./images/Hadoop NameNode Server01_9000.jpg)
+   ![](./images/Hadoop_NameNode_Server01_9000.jpg)
 
 
 
