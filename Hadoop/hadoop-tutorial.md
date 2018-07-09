@@ -474,6 +474,302 @@ wordcound 예제를 실행해 본다.
 
    
 
+## Hadoop 2.0 HA
+
+완전분산모드로 하둡 2.0 네임노드 HA를 구성한다. 이를 위해서 저널노드 실행을 위한 최소 3대 이상의 서버가 필요하다.
+
+### 환경설정
+
+실습환경은 Hadoop 2.0과 동일하므로 생략한다.
+
+
+
+#### zookeeper
+
+분산 코디네이터인 주키퍼를 설치하고 압축을 푼다.
+
+```shell
+wget "https://archive.apache.org/dist/zookeeper/zookeeper-3.4.10/zookeeper-3.4.10.tar.gz"
+tar xvfz zookeeper-3.4.10.tar.gz
+```
+
+##### conf/
+
+- zoo.cfg
+
+  - `dataDir`: 주키퍼 스냅샷을 저장하는 경로
+  - `server.#`: 멀티서버로 구성할 서버를 등록하는 옵션. '#' 부분에 해당 서버의 아이디를 숫자 또는 원하는 값으로 지정할 수 있다. 첫 번째 포트인 2888은 주키퍼 리더에 접속하기 위한 포트이고, 두 번째 포트인 3888은 리더를 결정하는 데 사용한다.
+
+  ```
+  dataDir=/home/hadoop/zookeeper-3.4.19/data
+  
+  server.1=Server01:2888:3888
+  server.2=Server01:2888:3888
+  server.3=Server01:2888:3888
+  ```
+
+##### data/
+
+- myid
+
+  - 각 서버마다 zoo.cfg에서 설정한 아이디 등록. 다음은 Server01의 myid 파일의 예시이다.
+
+  ```
+  1
+  ```
+
+주키퍼 환경설정이 완료되면 다른 서버에 전송하여 설치를 완료한다.
+
+각 서버마다 다음 명령어를 통해 주키퍼 서버를 실행 또는 종료할 수 있다.
+
+서버 상태를 보면 leader/follower로 모드가 자동 할당된 것을 확인할 수 있다.
+
+```shell
+# server start
+bin/zkServer.sh start
+
+# check status
+bin/zkServer.sh status
+
+# server stop
+bin/zkServer.sh stop
+```
+
+
+
+#### 하둡 conf/
+
+하둡 2.0의 설정에서 변동이 없는 파일은 생략한다.
+
+- masters
+
+  네임노드 HA를 구성하면 StandbyNameNode가 SecondaryNameNode를 대체한다. masters 파일이 필요없으므로 삭제한다.
+
+- core-site.xml
+
+  - `ha.zookeeper.quorum`: 네임노드 HA를 구성할 때 사용할 주키퍼 서버 주소
+
+  ```xml
+  <configuration>
+      <property>
+          <name>fs.defaultFS</name>
+          <value>hdfs://hadoop-cluster</value>
+      </property>
+      <property>
+          <name>ha.zookeeper.quorum</name>
+          <value>Server01:2181,Server02:2181,Server03:2181</value>
+      </property>
+      <property>
+          <name>hadoop.tmp.dir</name>
+          <value>/home/hadoop/tmp/hadoop-${user.name}</value>
+      </property>
+  </configuration>
+  ```
+
+- hdfs-site.xml
+
+  - `dfs.journalnode.edits.dir`: 저널노드의 데이터
+  - `dfs.nameservices`: 네임노드 HA와 HDFS 페더레이션에 사용. 두 개의 네임노드를 묶어서 가상의 파일 시스템 이름을 설정할 수 있다. 본 실습에서는 Server01과 Server02를 묶어서 hadoop-cluster라는 가상 파일 시스템 이름을 설정했다.
+  - `dfs.ha.namenodes.[nameservices_id]`: nameservices에서 설정한 네임서비스ID는 두 개의 네임노드ID로 구성된다. 호스트명 대신 논리적인 이름을 부여해서 사용한다. 본 실습에서는 hadoop-cluster가 nn1과 nn2라는 두 개의 네임노드ID로 구성되도록 설정했다.
+  - `dfs.namenode.rpc-address.[nameservices_id].[namenode_id]`: 네임노드가 RPC 서비스를 제공하기 위한 RPC 포트 설정값. 네임서비스ID와 네임노드ID라는 논리적인 명칭을 물리적인 호스트명(또는 IP)과 연결되도록 한다. 본 실습에서는 nn1을 Server01로, nn2를 Server02로 설정했다.
+  - `dfs.namenode.http-address.[nameservices_id].[namenode_id]`: HDFS 웹 어드민 화면을 제공하기 위한 설정값. RPC 설정과 마찬가지로 설정했다.
+  - `dfs.namenode.shared.edits.dir`: 네임노드가 에디트 로그를 저장하고 조회할 저널노드 그룹을 나타낸다. "qjournal://호스트1:포트1;호스트2:포트2/저널ID" 위와 같은 형식으로 작성한다. 이때, 저널ID는 저널노드 그룹의 고유한 식별값을 나타내는데 일반적으로 네임서비스ID와 동일하게 작성한다.
+  - `dfs.client.failover.proxy.provider.[nameservices_id]`: 클라이언트가 active namenode에 접근하도록 도와주는 클래스
+  - `dfs.ha.fencing.methods`: active namenode에 장애가 발생할 경우 해당 노드는 시스템에서 차단되고 standby namenode가 active namenode로 전환된다. 이때 기존 active namenode가 시스템에 접근할 수 없도록 차단하는 방법을 정의하는 속성값이다. SSH로 강제 종료(kill)하는 방법 또는 별도의 셸 스크립트로 차단하는 방법이 있다. 본 실습에서는 sshfence 방법을 채택하였다.
+  - `dfs.ha.fencing.ssh.private-key-files`: 강제 종료 방법 중 sshfence 방식을 채택했다면 SSH 접속 시 인증을 자동으로 통과할 수 있도록 인증키의 보관 경로를 설정해야 한다.
+  - `dfs.ha.automatic-failover.enabled`: 네임노드 장애복구를 시스템이 자동으로 진행할지 여부를 설정한다.
+
+  ```xml
+  <configuration>
+      <property>
+          <name>dfs.replication</name>
+          <value>3</value>
+      </property>
+      <property>
+          <name>dfs.namenode.name.dir</name>
+          <value>/home/hadoop/data/dfs/namenode</value>
+      </property>
+      <property>
+          <name>dfs.namenode.checkpoint.dir</name>
+          <value>/home/hadoop/data/dfs/namesecondary</value>
+      </property>
+      <property>
+          <name>dfs.datanode.data.dir</name>
+          <value>/home/hadoop/data/dfs/datanode</value>
+      </property>
+      <property>
+          <name>dfs.journalnode.edits.dir</name>
+          <value>/home/hadoop/data/dfs/journalnode</value>
+      </property>
+      <property>
+          <name>dfs.nameservices</name>
+          <value>hadoop-cluster</value>
+      </property>
+      <property>
+          <name>dfs.ha.namenodes.hadoop-cluster</name>
+          <value>nn1,nn2</value>
+      </property>
+      <property>
+          <name>dfs.namenode.rpc-address.hadoop-cluster.nn1</name>
+          <value>Server01:8020</value>
+      </property>
+      <property>
+          <name>dfs.namenode.rpc-address.hadoop-cluster.nn2</name>
+          <value>Server02:8020</value>
+      </property>
+      <property>
+          <name>dfs.namenode.http-address.hadoop-cluster.nn1</name>
+          <value>Server01:50070</value>
+      </property>
+      <property>
+          <name>dfs.namenode.http-address.hadoop-cluster.nn2</name>
+          <value>Server02:50070</value>
+      </property>
+      <property>
+          <name>dfs.namenode.shared.edits.dir</name>
+          <value>qjournal://Server01:8485;Server02:8485;Server03:8485/hadoop-cluster</value>
+      </property>
+      <property>
+          <name>dfs.client.failover.proxy.provider.hadoop-cluster</name>
+          <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+      </property>
+      <property>
+          <name>dfs.ha.fencing.methods</name>
+          <value>sshfence
+              shell(/bin/true)
+          </value>
+      </property>
+      <property>
+          <name>dfs.ha.fencing.ssh.private-key-files</name>
+          <value>/home/hadoop/.ssh/id_rsa</value>
+      </property>
+      <property>
+          <name>dfs.ha.automatic-failover.enabled</name>
+          <value>true</value>
+      </property>
+  </configuration>
+  ```
+
+- mapred-site.xml
+
+  - `mapreduce.job.ubertask.enable`: 맵리듀스 잡을 구성하는 태스크의 실행 방법을 우버 태스크로 실행하기 위한 설정값
+
+  ```xml
+  <configuration>
+      <property>
+          <name>mapreduce.job.ubertask.enable</name>
+          <value>true</value>
+      </property>
+      <property>
+          <name>mapreduce.framework.name</name>
+          <value>yarn</value>
+      </property>
+  </configuration>
+  ```
+
+환경 설정이 완료되면 수정한 모든 파일을 각 서버로 배포한다.
+
+
+
+### 하둡 실행
+
+가상 분산 모드 실습에서 생성된 /home/hadoop/data 디렉터리를 삭제한다.
+
+0. 각 서버마다 주키퍼를 실행한다.
+
+1. ZKFC를 실행하기 전 주키퍼를 초기화한다.
+
+   ```shell
+   bin/hdfs zkfc -formatZK
+   ```
+
+2. 각 서버에서 저널노드를 실행한다. 네임노드를 포맷하기 전에 저널노드를 먼저 실행해야만 포맷 명령어를 실행했을 때 공유 에디트 로그 디렉터리가 초기화된다.
+
+   ```shell
+   sbin/hadoop-daemon.sh start journalnode
+   ```
+
+3. 네임노드를 포맷한다.
+
+   ```shell
+   bin/hdfs namenode -format
+   ```
+
+4. 액티브 네임노드를 실행한다.
+
+   ```shell
+   sbin/hadoop-daemon.sh start namenode
+   ```
+
+5. 주키퍼 장애 컨트롤러(ZKFC)를 실행한다.
+
+   ```shell
+   sbin/hadoop-daemon.sh start zkfc
+   ```
+
+6. 스탠바이 네임노드를 설정한다.
+
+   ```shell
+   # Server02
+   bin/hdfs namenode -bootstrapStandby
+   ```
+
+7. 스탠바이 네임노드를 실행한다.
+
+   ```shell
+   # Server02
+   sbin/hadhoop-daemon.sh start namenode
+   ```
+
+8. 스탠바이 네임노드용 주키퍼 장애 컨트롤러를 실행한다.
+
+   ```shell
+   # Server02
+   sbin/hadoop-daemon.sh start zkfc
+   ```
+
+9. 전체 데이터노드를 실행한다.
+
+   ```shell
+   sbin/hadoop-daemons.sh start datanode
+   ```
+
+10. `jps` 명령어로 하둡 데몬의 실행 여부를 확인한다.
+
+    ```shell
+    # Server01
+    30401 NameNode
+    30625 JournalNode
+    30913 ResourceManager
+    25346 QuorumPeerMain
+    30811 DFSZKFailoverController
+    35771 Jps
+    
+    # Server02
+    27555 DFSZKFailoverController
+    27430 JournalNode
+    27319 DataNode
+    32791 Jps
+    23305 QuorumPeerMain
+    27241 NameNode
+    27662 NodeManager
+    
+    # Server03
+    24787 NodeManager
+    24678 JournalNode
+    29079 Jps
+    24571 DataNode
+    21549 QuorumPeerMain
+    ```
+
+    
+
+    | Hostname | Node                                     | Manager         | Zookeeper                               |
+    | -------- | ---------------------------------------- | --------------- | --------------------------------------- |
+    | Server01 | NameNode(Active), JournalNode            | ResourceManager | QuorumPeerMain, DFSZKFailoverController |
+    | Server02 | NameNode(Standby), JournalNode, DataNode | NodeManager     | QuorumPeerMain, DFSZKFailoverController |
+    | Server03 | JournalNode, DataNode                    | NodeManager     | QuorumPeerMain                          |
+
 
 
 ## Ref.
