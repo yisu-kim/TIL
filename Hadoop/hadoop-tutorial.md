@@ -802,10 +802,296 @@ wordcount 예제를 실행해 본다.
    hadoop fs -cat outupt/*
    ```
 
-   
+
+
+
+## HDFS 명령어
+
+하둡은 HDFS 제어를 위한 셸 명령어를 제공한다. 이 셸 명령어를 fs 셸(File System Shell)이라고 한다. fs 셸은 파일에 대한 권한 부여, 파일 복사 및 삭제뿐만 아니라 hdfs 고유의 파일 복제 정보에 대한 변경과 같은 작업도 지원한다.
+
+```shell
+bin/hadoop fs -cmd [args]
+```
+
+형식은 위와 같다. cmd는 사용자가 설정한 명령어이고, agrs는 필요한 파라미터이며, args에 생략부호(...)을 사용한 경우 반복 사용이 가능함을 의미한다.
+
+자세한 사항은 `hadoop fs -help`를 통해 확인할 수 있다.
+
+### 파일 목록 보기 - ls, lsr
+
+- ls
+
+  지정한 디렉터리에 있는 파일의 정보 또는 특정 파일을 지정해 정보를 출력한다. 기본 경로는 해당 계정의 홈 디렉터리이다.
+
+  ```shell
+  bin/hadoop fs -ls [directory|file...]
+  ```
+
+- lsr
+
+  현재 디렉터리의 하위 디렉터리 정보까지 출력한다.
+
+  ```shell
+  bin/hadoop fs -lsr [directory|file...]
+  ```
+
+### 파일 용량 확인 - du, dus
+
+- du
+
+  지정한 디렉터리나 파일의 사용량을 확인하는 명령어로, 바이트 단위로 결과를 출력한다. 기본 경로를 사용자의 홈 디렉터리이다.
+
+  ```shell
+  bin/hadoop fs -du [directory|file...]
+  ```
+
+- dus
+
+  각각이 아닌 전체 합계 사용량만 출력한다.
+
+  ```shell
+  bin/hadoop fs -dus <directory|file...>
+  ```
+
+### 파일 내용 보기 - cat, text
+
+- cat
+
+  지정한 파일의 내용을 화면에 출력한다.
+
+  ```shell
+  bin/hadoop fs -cat [file...]
+  ```
+
+- text
+
+  텍스트 파일뿐만 아니라 zip 파일 형태의 압축 파일도 텍스트 형태로 화면에 출력한다. 맵리듀스에서 압축된 형식으로 출력 데이터를 생성하는데, 이때 사용하여 데이터를 확인할 수 있다.
+
+  ```shell
+  bin/hadoop fs -text [file...]
+  ```
+
+### 디렉터리 생성 - mkdir
+
+- mkdir
+
+  지정한 경로에 디렉터리를 생성한다. HDFS에 이미 존재하는 디렉터리를 생성하면 오류가 발생한다.
+
+  ```shell
+  bin/hadoop fs -mkdir [directory]
+  ```
+
+### 파일 복사 - put, get, getmerge, cp, copyFromLocal, copyToLocal
+
+- put
+
+  지정한 로컬 파일 시스템의 파일 및 디렉터리를 목적지 경로로 복사한다.
+
+  ```shell
+  bin/hadoop fs -put [local dir|file...][destination dir|file]
+  ```
+
+- get
+
+  HDFS에 저장된 데이터를 로컬 파일 시스템으로 복사한다. 파일 무결성 확인을 위한 체크섬(checksum) 파일을 함께 복사하려면 `-crc` 옵션을 사용한다. `-ignoreCrc` 옵션을 이용하면 해당 파일의 체크섬을 확인하지 않는다.
+
+  ```shell
+  bin/hadoop fs -get <-ignoreCrc><-scr>[source dir|file...][local dir|file]
+  ```
+
+- getmerge
+
+  지정한 경로에 있는 모든 파일의 내용을 합친 후, 로컬 파일 시스템에 단 하나의 파일로 복사한다.
+
+  ```shell
+  bin/hadoop fs -getmerge [source dir|file...][local file]
+  ```
+
+- cp
+
+  지정한 소스 디렉터리 및 파일을 목적지 경로로 복사한다. 여러 파일을 복사할 경우 목적지 경로를 디렉터리로 설정해야 한다.
+
+  ```shell
+  bin/hadoop fs -cp [source dir|file...][destination dir|file]
+  ```
+
+- copyFromLocal
+
+  put 명령어와 동일한 기능
+
+  ```shell
+  bin/hadoop fs -copyFromLocal [local dir|file...][destination dir|file]
+  ```
+
+- copyToLocal
+
+  get 명령어와 동일한 기능
+
+  ```shell
+  bin/hadoop fs -copyToLocal <-ignoreCrc><-crc>[source dir|file...][local dir|file]
+  ```
+
+### 파일 이동 - mv, moveFromLocal
+
+- mv
+
+  소스 디렉터리 및 파일을 목적지 경로로 옮긴다.
+
+  ```shell
+  bin/hadoop fs -mv [source dir|file...][destination dir|file]
+  ```
+
+- moveFromLocal
+
+  put 명령어와 동일하게 동작하지만 로컬 파일 시스템으로 파일이 복사된 후 소스 경로의 파일은 삭제된다.
+
+  ```shell
+  bin/hadoop fs -moveFromLocal [source dir|file...][local dir|file]
+  ```
+
+### 파일 삭제 - rm
+
+- rm
+
+  지정한 디렉터리나 파일을 삭제한다. 이때, 디렉터리가 반드시 비어 있어야 한다.
+
+  ```shell
+  bin/hadoop fs -rm [dir|file...]
+  ```
+
+### 디렉터리 삭제 - rmr
+
+- rmr
+
+  지정한 파일 및 디렉터리를 삭제한다. 디렉터리가 비어있지 않더라도 삭제할 수 있다.
+
+  ```shell
+  bin/hadoop fs -rmr [dir]
+  ```
+
+### 카운트값 조회 - count
+
+- count
+
+  지정한 경로에 대한 전체 디렉토리 개수, 전체 파일 개수, 전체 파일 크기, 지정한 경로명을 출력한다. HDFS는 디렉터리에서 생성할 수 있는 파일 개수나 용량을 제한할 수 있는데 이러한 쿼터 정보를 확인하려면 `-q` 옵션을 사용한다.
+
+  ```shell
+  bin/hadoop fs -count <-q>[dir|file...]
+  ```
+
+### 파일 마지막 내용 확인 - tail
+
+- tail
+
+  지정한 파일의 마지막 1KB에 해당하는 내용을 출력한다. `-f` 옵션을 사용하면 해당 파일에 내용이 추가될 때마다 화면에 출력된 내용이 갱신된다.
+
+  ```shell
+  bin/hadoop fs -tail <-f>[file]
+  ```
+
+### 권한 변경 - chmod, chown, chgrp
+
+- chmod
+
+  지정한 경로에 대한 권한을 변경한다. 8진수 표기법 또는 영문 심볼릭 표기법으로 모드를 표현할 수 있다. 권한 변경은 해당 파일 소유자 또는 슈퍼유저만 가능하다. `-R` 옵션을 사용하면 권한 변경을 재귀적으로 실행한다.
+
+  ```shell
+  bin/hadoop fs -chmod <-R>[mod...][dir|file...]
+  ```
+
+- chown
+
+  지정한 파일과 디렉터리에 대한 소유권을 변경한다. `-R` 옵션을 사용하면 재귀적으로 실행된다.
+
+  ```shell
+  bin/hadoop fs -chown <-R>[user:group][dir|file...]
+  ```
+
+- chgrp
+
+  지정한 파일과 디렉터리에 대한 소유권 그룹만 변경한다. `-R` 옵션을 사용하면 재귀적으로 실행된다.
+
+  ```shell
+  bin/hadoop fs -chgrp <-R>[group][dir|file...]
+  ```
+
+### 0 byte 파일 생성 - touch
+
+- touch
+
+  크기가 0바이트인 파일을 생성한다.
+
+  ```shell
+  bin/hadoop fs -touch [file...]
+  ```
+
+### 통계 정보 조회 - stat
+
+- stat
+
+  지정한 경로에 대한 통계 정보를 조회한다. 별도의 옵션이 없으면 최종 수정된 날짜를 출력한다. 출력 포맷 옵션은 다음과 같다.
+
+  | format | function                                                     |
+  | ------ | ------------------------------------------------------------ |
+  | %b     | 블록 단위의 파일 크기                                        |
+  | %F     | 디렉터리일 경우 "directory", 파일일 경우 "regular file" 출력 |
+  | %n     | 디렉터리명 혹은 파일명                                       |
+  | %o     | 블록 크기                                                    |
+  | %r     | 복제 파일 개수                                               |
+  | %y     | 디렉터리 및 파일 갱신일자를 yyyy-MM-dd HH:mm:ss 형식으로 출력 |
+  | %Y     | 디렉터리 및 갱신일자를 유닉스 타임스탬프 형식으로 출력       |
+
+  ```shell
+  bin/hadoop fs -stat <format>[dir|file...]
+  
+  # eg.
+  bin/hadoop fs -stat %b-%F-%n-%o-%r-%y-%Y wordcount_output
+  # 0-directory-wordcount_output-0-0-2014-11-06 16:07:39-1415290059192
+  ```
+
+### 복제 데이터 개수 변경 - setrep
+
+- setrep
+
+  지정한 파일의 복제 데이터 개수를 변경한다. `-R` 옵션을 사용할 경우 재귀적으로 적용된다. `-w` 옵션은 변경된 개수를 적용하여 복제가 완료될때까지 대기하도록 한다.
+
+  ```shell
+  bin/hadoop fs -setrep <-R><-w>[replication_number][dir|file]
+  ```
+
+### 휴지통 비우기 - expunge
+
+- expunge
+
+  휴지통을 비운다. 삭제한 파일은 .Trash/ 라는 임시 디렉터리에 저장한 다음 일정 시간 후 완전히 삭제된다. 삭제 주기와 상관없이 삭제하고자 할 때 사용한다.
+
+  ```shell
+  bin/hadoop fs -expunge
+  ```
+
+### 파일 형식 확인 - test
+
+- test
+
+  지정한 경로에 대해 다음 옵션을 통해 파일 형식을 확인한다. 체크 결과가 맞을 경우 0을 출력한다.
+
+  | option | check              |
+  | ------ | ------------------ |
+  | d      | 디렉터리인가?      |
+  | e      | 경로가 존재하는가? |
+  | f      | 파일인가?          |
+  | s      | 비어있지 않은가?   |
+  | z      | 파일 크기가 0인가? |
+
+  ```shell
+  bin/hadoop fs -test -<defsz> [dir|file]
+  ```
+
+  
 
 
 
 ## Ref.
 
 - 시작하세요! 하둡 프로그래밍 (2nd), 정재화
+- [Hadoop documentation - FileSystemShell](https://hadoop.apache.org/docs/r2.7.6/hadoop-project-dist/hadoop-common/FileSystemShell.html)
