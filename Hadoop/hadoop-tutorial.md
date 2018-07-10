@@ -444,7 +444,7 @@ protoc --version
 
 ### 예제 실행
 
-wordcound 예제를 실행해 본다.
+wordcount 예제를 실행해 본다.
 
 1. 데이터를 저장할 디렉터리를 생성한다. 하둡 2.0에서는 /user 디렉터리도 직접 생성해야 한다.
 
@@ -769,6 +769,40 @@ bin/zkServer.sh stop
     | Server01 | NameNode(Active), JournalNode            | ResourceManager | QuorumPeerMain, DFSZKFailoverController |
     | Server02 | NameNode(Standby), JournalNode, DataNode | NodeManager     | QuorumPeerMain, DFSZKFailoverController |
     | Server03 | JournalNode, DataNode                    | NodeManager     | QuorumPeerMain                          |
+
+
+
+### 예제 실행
+
+wordcount 예제를 실행해 본다.
+
+1. 데이터를 저장할 디렉터리를 생성한다.
+
+   ```shell
+   hadoop fs -mkdir /user
+   hadoop fs -mkdir /user/hadoop
+   hadoop fs -mkdir input
+   ```
+
+2. 단어 개수를 계산하고 싶은 파일을 업로드한다.
+
+   ```shell
+   hadoop fs -put hadoop-2.7.6/etc/hadoop/hadoop-env.sh input/
+   ```
+
+3. yarn을 통해 맵리듀스 작업을 실행한다. 제공하는 jar 파일이 아닌 본 실습에서 작성한 jar 파일을 사용하였다.
+
+   ```shell
+   yarn jar TestWordCount-0.0.1-SNAPSHOT.jar com.test2.WordCount input output
+   ```
+
+4. 출력 결과를 확인한다.
+
+   ```shell
+   hadoop fs -cat outupt/*
+   ```
+
+   
 
 
 
