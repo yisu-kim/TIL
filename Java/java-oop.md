@@ -1,4 +1,4 @@
-# Java OOP
+Java OOP
 
 ## Class
 
@@ -97,7 +97,7 @@ class Test {
 
 클래스 상속을 위해서 `extends`라는 키워드를 사용한다. 클래스 간에 상속관계가 이루어지면 자식 클래스는 부모 클래스의 모든 것(객체 변수, 메소드 등)을 물려받는다. 보통 자식 클래스는 부모 클래스의 기능에 더하여 좀 더 많은 기능을 갖도록 설계한다.
 
-자바에서는 다중 상속은 지원하지 않는다.
+자바에서는 클래스의 다중 상속은 지원하지 않는다. 하지만 인터페이스는 여러 인터페이스를 다중 상속할 수 있다. (Polymorphism 참고)
 
 ```java
 public class Animal {
@@ -223,9 +223,18 @@ public static void main(String[] args) {
 
 ## Interface
 
-인터페이스는 규칙을 표현하는 것으로 인터페이스의 메소드는 정의만 있고 내용이 없다. 구체적인 내용은 인터페이스를 implements한 클래스에서 구현한다.
+인터페이스는 규칙을 표현하는 것으로 인터페이스의 메소드는 정의만 있고 내용이 없다. 인터페이스 메소드의 구체적인 내용은 인터페이스를 implements한 클래스에서 반드시 구현해야 한다.
 
 컴퓨터의 USB 포트의 규격을 알고 있으면 그에 맞는 하드디스크, 메모리스틱 등을 구현할 수 있듯이 인터페이스는 클래스 간의 연결을 느슨히 해서 독립적으로 존재할 수 있도록 돕는다.
+
+상속과 달리 한 클래스가 여러 인터페이스를 구현하는 것이 가능하다.
+
+```java
+// Predator interface
+public interface Predator {
+    public String getFood();
+}
+```
 
 ```java
 // Tiger class
@@ -240,13 +249,6 @@ public class Lion extends Animal implements Predator {
     public String getFood() {
         return "banana";
     }
-}
-```
-
-```java
-// Predator interface
-public interface Predator {
-    public String getFood();
 }
 ```
 
@@ -274,11 +276,104 @@ public static void main(String[] args) {
 
 ## Polymorphism
 
+하나의 객체가 여러 개의 자료형 타입을 가질 수 있는 것을 다형성(Polymorphism)이라 부른다.
+
+아래 예제의 tiger, lion 객체는 각각 Tiger, Lion 클래스의 객체이면서 상속 받은 Animal 클래스의 객체이기도 하다. 또한 lion은 Barkable, Predator 인터페이스의 객체이고 tiger는 BarkablePredator 인터페이스의 객체이면서 Barkable, Predator 인터페이스의 객체이기도 하다.
+
+```java
+// Barkable interface
+public interface Barkable {
+    public void bark();
+}
+```
+
+```java
+// BarkablePredator interface
+public interface BarkablePredator extends Barkable, Predator {
+}
+```
+
+```java
+// Tiger class
+public class Tiger extends Animal implements Predator, Barkable {
+    ...
+    public void bark() {
+        System.out.println("어흥");
+    }
+}
+
+// Lion class
+public class Lion extends Animal implements BarkablePredator {
+    ...
+    public void bark() {
+        Systme.out.println("으르렁");
+    }
+}
+```
+
+```java
+// Bouncer class
+public class Bouncer {
+    public void barkAnimal(Barkable barkable) {
+        barkable.bark();
+    }
+}
+```
+
+```java
+// Main class
+public static void main(String[] args) {
+    Tiger tiger = new Tiger();
+    Lion lion = new Lion();
+    
+    Bouncer bouncer = new Bouncer();
+    bouncer.barkAnimal(tiger);  // 어흥
+    bouncer.barkAnimal(lion);  // 으르렁
+}
+```
+
 
 
 ## Abstract Class
 
+인터페이스의 역할을 하면서 동시에 구현체를 가진다.
 
+`abstract` 키워드를 표기하여 추상클래스로 정의할 수 있다. 클래스뿐 아니라 클래스 내의 메소드 앞에도 표기해야 한다. 단, `abstract` 키워드를 붙이지 않은 일반 메소드도 추가할 수 있다.
+
+인터페이스 메소드와 마찬가지로 추상클래스의 추상메소드의 구체적인 내용이 반드시 상속 받은 클래스에서 구현되어야 한다. 추상클래스의 일반 메소드는 상속받은 클래스에서 사용할 수 있다.
+
+```java
+// Predator abstract class
+public abstract class Predator extends Animal {
+    public abstract String getFood();
+    
+    public boolean isPredator() {
+        return true;
+    }
+}
+```
+
+```java
+// Tiger class
+public class Tiger extends Predator implements Barkable {
+    ...
+}
+
+// Lion class
+public class Lion extends Predator implements Barkable {
+    ...
+}
+```
+
+```java
+// Main class
+public static void main(String[] args) {
+    Tiger tiger = new Tiger();
+    if (tiger.isPredator()) {
+        System.out.println("feed " + tiger.getFood());  // feed apple
+    }
+}
+```
 
 
 
