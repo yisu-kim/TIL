@@ -453,6 +453,280 @@ for (String number: numbers) {
 
 
 
+## 06 입출력
+
+### 콘솔 입출력
+
+- **InputStream** - byte
+
+  Stream 형태의 데이터를 콘솔에서 입력받을 때 사용한다.
+
+  Stream이란 이어져 있는 데이터의 형태를 의미한다. 예를 들어, 파일 데이터, HTTP 응답 데이터, 키보드 입력 등이 있다.
+
+  `InputStream`의 `read()` 메소드는 1 byte만 입력받는다. 저장되는 값을 0-255 사이의 정수값으로 아스키 코드값이다.
+
+  ```java
+  import java.io.InputStream;
+  // 1 byte
+  public class StreamTest {
+      public static void main(String[] args) throws Exception {
+          InputStream in = System.in;
+          
+          int a;
+          a = in.read();  // a
+          
+          System.out.println(a);  // 97
+      }
+  }
+  ```
+
+- **InputStreamReader** - character
+
+  바이트 대신 문자로 입력 스트림을 읽을 때 사용한다. 객체를 생성할 때 `InputStream`의 객체가 필요하다.
+
+  ```java
+  import java.io.InputStream;
+  import java.io.InputStreamReader;
+  // 3 byte
+  public class StreamTest {
+      public static void main(String[] args) throws Exception {
+          InputStream in = System.in;
+          InputStreamReader reader = new InputStreamReader(in);
+          
+          byte[] a = new byte[3];
+          in.read(a);  // abc
+          
+          for (byte b: a) {
+              System.out.println(b);  // 97 98 99
+          }
+          
+          char[] a1 = new char[3];
+          reader.read(a1);  // abc
+          
+          for (String b1: a1) {
+      		System.out.println(b1);  // abc
+  		}
+      }
+  }
+  ```
+
+- **BufferedReader** - String
+
+  고정된 길이가 아니라 사용자가 엔터키를 누를 때까지 입력을 받으려할 때 사용한다. 객체 생성시 생성자의 입력값으로 `InputStreamReader` 객체를 받아야 한다.
+
+  ```java
+  import java.io.BufferedReader;
+  import java.io.InputStream;
+  import java.io.InputStreamReader;
+  
+  public class StreamTest {
+      public static void main(String[] args) throws Exception {
+          InputStream in = System.in;
+          InputStreamReader reader = new InputStreamReader(in);
+          BufferedReader br = new BufferedReader(reader);
+          
+          String a = br.readLine();  // HelloWorld
+          System.out.println(a);  // HelloWorld
+      }
+  }
+  ```
+
+  
+
+> J2SE 5.0 부터 `java.util.Scanner`라는 내장클래스가 새로 추가되었다. 이 클래스를 이용하면 콘솔입력을 쉽게 처리할 수 있다.
+
+- Scanner
+
+  생성자의 입력으로 콘솔입력인 `InputStream`이 필요하다. 객체 선언 후 `next()` 메소드로 단어 하나(Token)를 읽어들인다. 그 밖에 라인을 입력받는 `nextLine()` 메소드, 정수를 입력받는 `nextInt()` 메소드 등이 있다.
+
+  ```java
+  import java.util.Scanner;
+  
+  public class ScannerTest {
+      public static void main(String[] args) {
+      	Scanner sc = new Scanner(System.in);
+          system.out.println(sc.next());
+  	}
+  }
+  ```
+
+  
+
+콘솔 출력의 경우 `System.out.println()`을 주로 사용한다. 이는 `PrintStream` 클래스에 속하는 객체로 문자열을 출력하거나 디버깅 시 주로 사용된다.
+
+
+
+### 파일 입출력
+
+모니터 화면뿐만 아니라 파일로도 결과값을 출력할 수 있다.
+
+- **FileOutputStream** - byte
+
+  `OutputStream` 클래스를 상속받는 클래스로 바이트 단위로 데이터를 처리한다.
+
+  이 클래스의 객체를 생성하면 파일이 생성된다. 이때 생성자의 입력으로 파일명을 전달해야 한다.
+
+  `write()` 메소드를 사용하여 파일에 내용을 쓸 수 있다. 문자열을 쓸 경우 byte 배열로 바꿔줘야 하므로 `getBytes()` 메소드를 사용한다.
+
+  사용한 파일 객체를 닫으려면 `close()` 메소드를 사용한다.
+
+  ```java
+  import java.io.FileOutputStream;
+  import java.io.IOException;
+  
+  public class FileWrite {
+      public static void main(String[] args) throws IOException {
+      	FileOutputStream output = new FileOutputStream("c:/out.txt");
+          for (int i = 1; i < 11; i++) {
+              String data = i + "번째 줄입니다.\r\n";
+              output.write(data.getBytes());
+          }
+          output.close();
+      }
+  }
+  ```
+
+  윈도우의 경우 `\r\n`을 사용하여 줄바꿈이 가능하다. 유닉스인 경우에는 `\n`만 사용하면 된다.
+
+- **FileWriter** - String
+
+  byte배열 대신 문자열을 직접 쓸 때 사용한다.
+
+  ```java
+  import java.io.FileWriter;
+  import java.io.IOException;
+  
+  public class FileWrite {
+      public static void main(String[] args) throws IOException {
+          FileWriter fw = new FileWriter("c:/out.txt");
+          for (int i = 1; i < 11; i++) {
+              String data = i + "번째 줄입니다.\r\n";
+              fw.write(data);
+          }
+          fw.close();
+      }
+  }
+  ```
+
+- **PrintWriter** - println()
+
+  문자열을 쓸 때 줄바꿈을 위해 `\r\n`을 사용하는 대신 `println()` 메소드를 사용할 수 있다.
+
+  ```java
+  import java.io.PrintWriter;
+  import java.io.IOException;
+  
+  public class FileWrite {
+      public static void main(String[] args) throws IOException {
+          PrintWriter pw = new PrintWriter("c:/out.txt");
+          for (int i = 1; i < 11; i++) {
+              String data = i + "번째 줄입니다.";
+              pw.println(data);
+          }
+          pw.close();
+      }
+  }
+  ```
+
+  
+
+기존에 존재하는 파일에 내용을 추가하려면 파일을 추가모드로 열어야 한다.
+
+- **FileWriter**
+
+  ```java
+  new FileWriter(file_name, append_mode);
+  ```
+
+  ```java
+  import java.io.FileWriter;
+  import java.io.IOException;
+  
+  public class FileWrite {
+      public static void main(String[] args) throws IOException {
+          FileWriter fw = new FileWriter("c:/out.txt", true);
+          for (int i = 11; i < 21; i++) {
+              String data = i + "번째 줄입니다.\r\n";
+              fw.write(data);
+          }
+          fw.close();
+      }
+  }
+  ```
+
+- **PrintWriter**
+
+  생성자의 입력으로 추가모드로 설정한 `FileWriter`의 객체를 사용해야 한다.
+
+  ```java
+  import java.io.FileWriter;
+  import java.io.IOException;
+  import java.io.PrintWriter;
+  
+  public class FileWrite {
+      public static void main(String[] args) throws IOException {
+          FileWriter fw = new FileWriter("c:/out.txt", true);
+          PrintWriter pw = new PrintWriter(fw);
+          for (int i = 11; i < 21; i++) {
+              String data = i + "번째 줄입니다.";
+              pw.println(data);
+          }
+          pw.close();
+      }
+  }
+  ```
+
+  
+
+마찬가지로 사용자 입력이 아닌 파일로도 입력값을 받을 수 있다.
+
+- **FileInputStream** - byte
+
+  해당 클래스를 이용하면 byte 단위로 파일을 읽을 수 있다. 이 경우 파일 내용의 크기를 정확히 모르면 사용하기에 불편하다.
+
+  ```java
+  import java.io.FileInputStream;
+  import java.io.IOException;
+  
+  public class FileRead {
+      public static void main(String[] args) throws IOException {
+          byte[] b = new byte[1024];
+          FileInputStream input = new FileInputStream("c:/in.txt");
+          input.read(b);
+          System.out.println(new String(b));
+          input.close();
+      }
+  }
+  ```
+
+- **FileReader**, **BuffredReader** - line
+
+  파일을 라인 단위로 받을 때 사용한다.
+
+  `readLine()` 메소드는 파일에 끝에 도달하여 더이상 읽을 라인이 없을 경우 null을 리턴한다. 이를 이용하여 루프의 종료조건으로 사용한다.
+
+  ```java
+  import java.io.BufferedReader;
+  import java.io.FileReader;
+  import java.io.IOException;
+  
+  public class FileRead {
+      public static void main(String[] args) throws IOException {
+          FileReader fr = new FileReader("c:/in.txt");
+          BufferedReader br = new BufferedReader(fr);
+          while (true) {
+              String line = br.readLine();
+              if (line == null) break;
+              System.out.println(line);
+          }
+          fr.close();
+          br.close();
+      }
+  }
+  ```
+
+  
+
 
 
 ## Ref.
