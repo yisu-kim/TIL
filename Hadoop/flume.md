@@ -31,9 +31,7 @@
 
   
 
-## Local
-
-### Environment Setting
+## Environment Setting
 
 - Hadoop 환경변수 확인
 
@@ -57,6 +55,13 @@
   # conf/flume-env.sh
   export JAVA_HOME=/usr/java/default
   ```
+
+
+
+
+## Exercise
+
+### Local
 
 - Flume configuration 설정
 
@@ -85,32 +90,151 @@
   agent.sinks.h1.channel = memoryChannel
   ```
 
+- Flume 실행
+
+  하둡 실행 상태 확인 후 다음 실습을 진행한다.
+
+  >  0부터 카운트를 시작하여 10씩 끊어 hdfs에 저장한다.
+
+  ```shell
+  flume-ng agent \
+  --conf-file $FLUME_HOME/conf/flume-conf.properties \
+  -n agent \
+  -Dflume.root.logger=INFO,console
+  ```
+
+- 웹(https://server01:50070) 또는 콘솔에서 실행 결과를 확인해 본다.
+
+  ```shell
+  # first file
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+  ```
+
+  
+
+### Sender - Receiver
+
+다음 설정을 구현한다.
+
+> - Sender - Server02
+>   - Source: /home/hadoop/spooldir
+>   - Channel: file
+>   - Sink: avro
+> - Receiver - Server01
+>   - Source: avro
+>   - Channel: file
+>   - Sink: hdfs
 
 
-### Exercise
 
-하둡 실행 상태 확인 후 다음 실습을 진행한다.
+1. Server02에 spooldir/ 생성
 
-> 0부터 카운트를 시작하여 10씩 끊어 hdfs에 저장한다.
+   ```shell
+   mkdir /home/hadoop/spooldir
+   ```
 
-```shell
-flume-ng agent --conf-file $FLUME_HOME/conf/flume-conf.properties -n agent -Dflume.root.logger=INFO,console
-```
+2. conf/ 설정
 
-웹(https://server01:50070) 또는 콘솔에서 실행 결과를 확인해 본다.
+   - Server02
 
-e.g.
+     ```shell
+     # conf/Sender.conf
+     Sender.sources = spooldir-source  
+     Sender.channels = file-channel
+     Sender.sinks = avro-sink
+      
+     Sender.sources.spooldir-source.type = spooldir
+     Sender.sources.spooldir-source.spoolDir = /home/hadoop/spooldir
+      
+     Sender.sinks.avro-sink.type = avro
+     Sender.sinks.avro-sink.hostname = ip주소 
+     Sender.sinks.avro-sink.port = 11111
+     
+     Sender.channels.file-channel.type = file
+     Sender.channels.file-channel.checkpointDir = /home/hadoop/testflume/checkpoint/
+     Sender.channels.file-channel.dataDirs = /home/hadoop/testflume/data/
+      
+     Sender.sources.spooldir-source.channels = file-channel
+     Sender.sinks.avro-sink.channel = file-channel
+     ```
 
-```
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-```
+   - Server01
+
+     ```shell
+     # conf/Receiver.conf
+     Receiver.sources = avro-source  
+     Receiver.channels = file-channel
+     Receiver.sinks = hdfs-sink
+      
+     Receiver.sources.avro-source.type = avro
+     Receiver.sources.avro-source.bind = 0.0.0.0
+     Receiver.sources.avro-source.port = 11111
+      
+     Receiver.sinks.hdfs-sink.type = hdfs
+     Receiver.sinks.hdfs-sink.hdfs.path = hdfs://Server01:9000/user/hadoop/flume/
+     Receiver.sinks.hdfs-sink.hdfs.rollInterval = 0
+     Receiver.sinks.hdfs-sink.hdfs.rollSize = 0
+     Receiver.sinks.hdfs-sink.hdfs.rollCount = 10000
+     Receiver.sinks.hdfs-sink.hdfs.fileType = DataStream
+      
+     #Use a channel which buffers events in file
+     Receiver.channels.file-channel.type = file
+     Receiver.channels.file-channel.checkpointDir = /home/hadoop/testflume/checkpoint/
+     Receiver.channels.file-channel.dataDirs = /home/hadoop/testflume/data/
+      
+     Receiver.sources.avro-source.channels = file-channel
+     Receiver.sinks.hdfs-sink.channel = file-channel
+     ```
+
+3. Flume 실행
+
+   - Server01
+
+     ```shell
+     flume-ng agent \
+     --conf-file $FLUME_HOME/conf/Receiver.conf \
+     -n Receiver \
+     -Dflume.root.logger=INFO,console
+     ```
+
+   - Server02 (root 계정)
+
+     ```shell
+     flume-ng agent \
+     --conf-file $FLUME_HOME/conf/Sender.conf \
+     --name Sender \
+     -Dflume.root.logger=INFO,console
+     ```
+
+4. 테스트
+
+   1. Server02의 spooldir/ 변경
+
+      ```shell
+      # Create test.txt file
+      Hello, World!
+      ```
+
+   2. 결과 확인
+
+      ```shell
+      # Server02 - spooldir/
+      test.txt.COMPLETED
+      
+      # Hadoop - /user/hadoop/flume
+      -rw-r--r--   3 hadoop supergroup          6 2018-07-18 16:17 /user/hadoop/flume/FlumeData.1531898273132.tmp
+      # file contents
+      Hello, World!
+      ```
+
+      
 
