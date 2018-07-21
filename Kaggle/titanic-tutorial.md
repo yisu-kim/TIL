@@ -399,6 +399,7 @@ print(my_forest.score(features_forest, target))
 | my_solution_one   | 0.56937      |
 | my_solution_two   | 0.69377      |
 | my_solution_three | 0.75598      |
+| my_solution_four  | 0.77990      |
 
 
 
