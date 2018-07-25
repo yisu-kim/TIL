@@ -29,7 +29,7 @@ tar xvfz apache-hive-2.3.3-bin.tar.gz
 
    ```shell
    # Hive Env
-   export HIVE_HOME=/home/hadoop/apache-hive-2.3.3.-bin.tar.gz
+   export HIVE_HOME=/home/hadoop/apache-hive-2.3.3.-bin
    export PATH=$PATH:$HIVE_HOME/bin
    ```
 
