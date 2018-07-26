@@ -36,6 +36,9 @@ tar xvfz hbase-1.2.6-bin.tar.gz
    export JAVA_HOME=/usr/java/default
    export HBASE_PID_DIR=/home/hadoop/hbase-1.2.6/pids
    export HBASE_MANAGES_ZK=false
+   # cluster mode
+   export HADOOP_CONF_DIR=/home/hadoop/hadoop-2.7.6/etc/hadoop
+   export HBASE_CLASSPATH=$HBASE_CLASSPATH:$HADOOP_CONF_DIR
    ```
 
 3. conf/hbase-site.xml
@@ -117,12 +120,6 @@ tar xvfz hbase-1.2.6-bin.tar.gz
    2295 NodeManager
    2088 QuorumPeerMain
    2670 HRegionServer
-   ```
-
-   > 이때, HRegionServer가 종료되는 오류가 있을 경우 해당 서버에서 다음 명령어를 통해 수동으로 구동시킨다.
-
-   ```shell
-   hbase-daemon.sh start regionserver
    ```
 
 5. 웹 인터페이스 확인
