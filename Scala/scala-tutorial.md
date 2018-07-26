@@ -24,18 +24,18 @@
 
 ## Installation
 1. JDK 1.8 설치 
-  http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+    http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
 2. Eclipse Oxygen 설치
-  https://www.eclipse.org/downloads/packages/release/Oxygen/3A
+    https://www.eclipse.org/downloads/packages/release/Oxygen/3A
 3. Scala 설치 
-  https://www.scala-lang.org/download/
+    https://www.scala-lang.org/download/
 4. Scala IDE 설치
-  http://scala-ide.org/download/current.html
-  위 사이트에서 Ecplipse 4.7 (Oxygen) Update site installation의 주소를 복사한다.
-  이클립스를 열어 메뉴의 Help - Install New Software를 클릭한다.
-  Work with 항목에 복사한 주소를 입력한다.
-  http://download.scala-ide.org/sdk/lithium/e47/scala212/stable/site
-  Select All을 선택하여 설치를 완료한다.
+    http://scala-ide.org/download/current.html
+    위 사이트에서 Ecplipse 4.7 (Oxygen) Update site installation의 주소를 복사한다.
+    이클립스를 열어 메뉴의 Help - Install New Software를 클릭한다.
+    Work with 항목에 복사한 주소를 입력한다.
+    http://download.scala-ide.org/sdk/lithium/e47/scala212/stable/site
+    Select All을 선택하여 설치를 완료한다.
 
 
 
@@ -316,6 +316,13 @@ object Test {
       case _ => println("Nothing")
     }
     checkvalue("One")
+      
+    var r = add(1)(2)
+    println(r)
+
+    var r2 = add(1)_
+    var r3 = r2(2)
+    println(r3)
   }
 
   def checkvalue(a: Any): Any = a match {
@@ -323,6 +330,10 @@ object Test {
     case "One" => println("One")
     case "Two" => println("Two")
     case _ => println("Nothing")
+  }
+  
+  def add(a: Int)(b: Int) = {
+    a + b
   }
 }
 ```
@@ -348,3 +359,146 @@ object Test1 {
   def testMethod() { println("companion object") }
 }
 ```
+
+
+## Lambda Expression
+
+anonymous function이라고도 한다.
+
+```scala
+// general function
+func(a: Int, b: Int): Int = {
+    return a + b
+}
+// anonymous function
+(a: Int, b: Int) => a + b
+```
+
+e.g.
+
+```scala
+object Test {
+  def main(args: Array[String]) {
+    func1(20, multiply)
+
+    var t = (x: Int) => x + 1
+    var t2 = (x: Int, y: Int) => x * y
+    var t3 = (_: Int) + (_: Int)  // _(underscore): wildcard
+    println(t(1))
+    println(t2(1, 2))
+    println(t3(1, 2))
+  }
+  def func1(a: Int, f: Int => AnyVal): Unit = {
+    println(f(a))
+  }
+  def multiply(a: Int): Int = {
+    a * 2
+  }
+}
+```
+
+
+
+## Constructor
+
+```scala
+class Employee(name: String, age: Int) { // primary constructors
+  var nm = name
+  var ag = age
+  var id = 0
+  def getEmpInfo() {
+    println("name: " + nm + ", age: " + ag)
+  }
+  def this(name: String, age: Int, id: Int) {
+    this(name, age)
+    this.id = id
+  }
+}
+
+object Test {
+  def main(args: Array[String]) {
+    var e = new Employee("Tom", 20)
+    e.getEmpInfo()
+  }
+}
+```
+
+
+
+## Overloading
+
+함수의 이름은 같지만 파라미터의 타입과 개수를 다르게 정의한다.
+
+```scala
+class Calc {
+  def add(a: Int, b: Int): Int = {
+    return a + b
+  }
+  def add(a: Int, b: Int, c: Int): Int = {
+    return a + b + c
+  }
+}
+
+object Test {
+  def main(args: Array[String]) {
+    var o = new Calc()
+    o.add(1, 2)
+    o.add(1, 2, 3)
+  }
+}
+```
+
+
+
+## Inheritance
+
+Scala에서는 다음과 같은 형태의 상속이 가능하다.
+
+- Single
+- Multilevel
+- Hierarchical
+- Multiple
+- Hybrid
+
+```scala
+class Student {
+  var name: String = "Hong Gil Dong"
+}
+
+class HighStudent extends Student {  // extends keyword
+  var location: String = "Seoul"
+  println("name = " + name)  // Parent class variable
+  println("location = " + location)
+}
+
+object Test {
+  def main(args: Array[String]) {
+    new HighStudent()
+  }
+}
+```
+
+
+
+## Overriding
+
+부모 클래스의 함수를 재정의한다.
+
+```scala
+class Animal {
+  def breath() { println("Animal is breathing") }
+}
+
+class Cat extends Animal {
+  // override keyword
+  override def breath() { println("Cat is breathing") }
+}
+
+object Test {
+  def main(args: Array[String]) {
+    var c = new Cat()
+    c.breath()  // Cat is breathing
+  }
+}
+```
+
