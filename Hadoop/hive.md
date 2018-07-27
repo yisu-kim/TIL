@@ -29,7 +29,7 @@ tar xvfz apache-hive-2.3.3-bin.tar.gz
 
    ```shell
    # Hive Env
-   export HIVE_HOME=/home/hadoop/apache-hive-2.3.3.-bin
+   export HIVE_HOME=/home/hadoop/apache-hive-2.3.3-bin
    export PATH=$PATH:$HIVE_HOME/bin
    ```
 
@@ -258,25 +258,33 @@ tar xvfz apache-hive-2.3.3-bin.tar.gz
        </property>
        <property>
            <name>javax.jdo.option.ConnectionUserName</name>
-           <value>hadoop</value>
+           <value>유저명</value>
        </property>
        <property>
            <name>javax.jdo.option.ConnectionPassword</name>
-           <value>Pa$$w0rd123</value>
+           <value>패스워드</value>
        </property>
    </configuration>
    ```
 
-9. Hive 실행
+9. Metastore 초기화
+
+   > mysql-connector-java-5.1.46.jar와 같은 커넥터를 hive의 lib/ 에 복사한다.
 
    ```shell
-   hive
-   #
-   ...
-   hive>
+   schematool -initSchema -dbType mysql
    ```
 
-10. HiveQL 실습
+10. Hive 실행
+
+    ```shell
+    hive
+    #
+    ...
+    hive>
+    ```
+
+11. HiveQL 실습
 
     ```mariadb
     -- Create database
@@ -386,7 +394,7 @@ Lucy|Vancouver|Female,57|Sales:89,HR:94|Sales:Lead
 1. Internal Table
 
    ```mariadb
-   -- Create external table and load the data
+   -- Create external table
    CREATE TABLE IF NOT EXISTS employee_internal
    (
    name string,
@@ -402,6 +410,7 @@ Lucy|Vancouver|Female,57|Sales:89,HR:94|Sales:Lead
    	MAP KEYS TERMINATED BY ':'
    	STORED AS TEXTFILE;
    
+   -- Load the data
    LOAD DATA LOCAL INPATH '/home/hadoop/emp_data.txt'
    OVERWRITE INTO TABLE employee_internal;
    
@@ -415,6 +424,204 @@ Lucy|Vancouver|Female,57|Sales:89,HR:94|Sales:Lead
    Will    ["Montreal"]    {"sex":"Male","age":35} {"Perl":85}     {"Product":["Lead"],"Test":["Lead"]}
    Shelley ["New York"]    {"sex":"Female","age":27}       {"Python":80}   {"Test":["Lead"],"COE":["Architect"]}
    Lucy    ["Vancouver"]   {"sex":"Female","age":57}       {"Sales":89,"HR":94}   {"Sales":["Lead"]}
+   ```
+
+2. External Table
+
+   ```mariadb
+   -- Create external table
+   CREATE EXTERNAL TABLE IF NOT EXISTS employee_external
+   (
+   name string,
+   work_place ARRAY<string>,
+   sex_age STRUCT<sex:string,age:int>,
+   skills_score MAP<string,int>,
+   depart_title MAP<STRING,ARRAY<STRING>>
+   )
+   COMMENT 'This is an external table'
+   ROW FORMAT DELIMITED
+   FIELDS TERMINATED BY '|'
+   COLLECTION ITEMS TERMINATED BY ','
+   MAP KEYS TERMINATED BY ':'
+   STORED AS TEXTFILE
+   LOCATION '/user/hadoop/emp_data';  -- HDFS storage
+   
+   -- Load the data
+   LOAD DATA LOCAL INPATH '/home/hadoop/emp_data.txt'
+   OVERWRITE INTO TABLE employee_external;
+   
+   -- Select table
+   select * from employee_external;
+   -- 
+   chael   ["Montreal","Toronto"]  {"sex":"Male","age":30} {"DB":80}       {"Product":["Developer^DLead"]}
+   Will    ["Montreal"]    {"sex":"Male","age":35} {"Perl":85}     {"Product":["Lead"],"Test":["Lead"]}
+   Shelley ["New York"]    {"sex":"Female","age":27}       {"Python":80}   {"Test":["Lead"],"COE":["Architect"]}
+   Lucy    ["Vancouver"]   {"sex":"Female","age":57}       {"Sales":89,"HR":94}   {"Sales":["LeadMichael"]}
+   Will    ["Montreal"]    {"sex":"Male","age":35} {"Perl":85}     {"Product":["Lead"],"Test":["Lead"]}
+   Shelley ["New York"]    {"sex":"Female","age":27}       {"Python":80}   {"Test":["Lead"],"COE":["Architect"]}
+   Lucy    ["Vancouver"]   {"sex":"Female","age":57}       {"Sales":89,"HR":94}   {"Sales":["Lead"]}
+   ```
+
+3. Partition Table
+
+   ```mariadb
+   -- Create partition table DDL
+   CREATE TABLE employee_partitioned
+   (
+   name string,
+   work_place ARRAY<string>,
+   sex_age STRUCT<sex:string,age:int>,
+   skills_score MAP<string,int>,
+   depart_title MAP<STRING,ARRAY<STRING>>
+   )
+   PARTITIONED BY (Year INT, Month INT)
+   ROW FORMAT DELIMITED
+   	FIELDS TERMINATED BY '|'
+   	COLLECTION ITEMS TERMINATED BY ','
+   	MAP KEYS TERMINATED BY ':';
+   
+   -- Show partitions
+   SHOW PARTITIONS employee_partitioned;
+   
+   -- Add multiple partitions
+   ALTER TABLE employee_partitioned ADD
+   PARTITION (year=2014, month=11)
+   PARTITION (year=2014, month=12);
+   
+   -- Show partitions
+   SHOW PARTITIONS employee_partitioned;
+   -- 
+   year=2014/month=11
+   year=2014/month=12
+   
+   -- Drop partition
+   ALTER TABLE employee_partitioned DROP
+   PARTITION (year=2014, month=11);
+   
+   -- Show partitions
+   SHOW PARTITIONS employee_partitioned;
+   -- 
+   year=2014/month=12
+   
+   -- Load data to the partition
+   LOAD DATA LOCAL INPATH '/home/hadoop/emp_data.txt'
+   OVERWRITE INTO TABLE employee_partitioned
+   PARTITION (year=2014, month=12);
+   
+   -- Select table
+   select * from employee_partitioned;
+   -- 
+   chael   ["Montreal","Toronto"]  {"sex":"Male","age":30} {"DB":80}       {"Product":["Developer^DLead"]} 2014    12
+   Will    ["Montreal"]    {"sex":"Male","age":35} {"Perl":85}     {"Product":["Lead"],"Test":["Lead"]}    2014    12
+   Shelley ["New York"]    {"sex":"Female","age":27}       {"Python":80}   {"Test":["Lead"],"COE":["Architect"]}   2014    12
+   Lucy    ["Vancouver"]   {"sex":"Female","age":57}       {"Sales":89,"HR":94}   {"Sales":["LeadMichael"]}        2014    12
+   Will    ["Montreal"]    {"sex":"Male","age":35} {"Perl":85}     {"Product":["Lead"],"Test":["Lead"]}    2014    12
+   Shelley ["New York"]    {"sex":"Female","age":27}       {"Python":80}   {"Test":["Lead"],"COE":["Architect"]}   2014    12
+   Lucy    ["Vancouver"]   {"sex":"Female","age":57}       {"Sales":89,"HR":94}   {"Sales":["Lead"]}       2014    12
+   ```
+
+   ```mariadb
+   -- Set parition setting
+   set hive.exec.dynamic.partition=true;
+   set hive.exec.dynamic.partition.mode=nonstrict;
+   set hive.exec.max.dynamic.partitions.pernode=1000;
+   
+   -- Drop table
+   DROP TABLE IF EXISTS partitioned_user;
+   
+   -- Create temporary table
+   CREATE TEMPORARY TABLE temp_user(
+   	firstname VARCHAR(64),
+   	lastname  VARCHAR(64),
+   	address   STRING,
+   	country   VARCHAR(64),
+   	city      VARCHAR(64),
+   	state     VARCHAR(64),
+   	post      STRING,
+   	phone1    VARCHAR(64),
+   	phone2    STRING,
+   	email     STRING,
+   	web       STRING
+   	)
+   	ROW FORMAT DELIMITED 
+   		FIELDS TERMINATED BY ','
+   		LINES TERMINATED BY '\n'
+           STORED AS TEXTFILE;
+   
+   -- Loda the data
+   LOAD DATA LOCAL INPATH '/home/hadoop/UserData.txt' INTO TABLE temp_user;
+   
+   -- Select table
+   SELECT firstname, phone1, city 
+   	FROM temp_user 
+   	WHERE country='US' AND state='CA' 
+   	ORDER BY city 
+   	LIMIT 5;
+   -- 
+   MapReduce Jobs Launched:
+   Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 20.34 sec   HDFS Read: 582259 HDFS Write: 631180 SUCCESS
+   Total MapReduce CPU Time Spent: 20 seconds 340 msec
+   OK
+   Venita  714-523-6653    Anaheim
+   Merissa 562-579-6900    Bellflower
+   Joesph  510-677-9785    Berkeley
+   Louvenia        310-820-2117    Beverly Hills
+   Chau    310-560-8022    Beverly Hills
+   
+   -- Create partition table
+   CREATE TABLE partitioned_user(
+   	firstname VARCHAR(64),
+   	lastname  VARCHAR(64),
+   	address   STRING,
+   	city 	  VARCHAR(64),
+   	post      STRING,
+   	phone1    VARCHAR(64),
+   	phone2    STRING,
+   	email     STRING,
+   	web       STRING
+   	)
+   	PARTITIONED BY (country VARCHAR(64), state VARCHAR(64))  -- partition key
+   	STORED AS SEQUENCEFILE;
+   
+   -- Insert data
+   INSERT INTO TABLE partitioned_user
+   	PARTITION (country, state)
+           SELECT  firstname ,
+   		lastname  ,
+   		address   ,
+   	    city      ,
+   		post      ,
+   		phone1    ,
+   		phone2    ,
+   		email     ,
+   		web       ,
+   		country   ,
+   	    state     
+   	FROM temp_user;
+   -- 
+   Loading data to table test.partitioned_user partition (country=null, state=null)
+   Time taken to load dynamic partitions: 33.942 seconds
+   Time taken for adding to write entity : 0.103 seconds
+   MapReduce Jobs Launched:
+   Stage-Stage-1: Map: 1   Cumulative CPU: 15.4 sec   HDFS Read: 289445 HDFS Write: 631981 SUCCESS
+   Total MapReduce CPU Time Spent: 15 seconds 400 msec
+   
+   -- Select table
+   SELECT firstname, phone1, city 
+   	FROM partitioned_user 
+   	WHERE country='US' AND state='CA' 
+   	ORDER BY city 
+   	LIMIT 5;
+   -- 
+   MapReduce Jobs Launched:
+   Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 9.18 sec   HDFS Read: 35133 HDFS Write: 631062 SUCCESS
+   Total MapReduce CPU Time Spent: 9 seconds 180 msec
+   OK
+   Venita  714-523-6653    Anaheim
+   Merissa 562-579-6900    Bellflower
+   Joesph  510-677-9785    Berkeley
+   Louvenia        310-820-2117    Beverly Hills
+   Chau    310-560-8022    Beverly Hills
    ```
 
    
