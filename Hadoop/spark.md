@@ -523,3 +523,4 @@ scala> onlyInterestedIn.saveAsTextFile("file:///home/hadoop/results")
 
 ## Ref.
 
+- Learning Spark - Holden Karau, Andy Konwinski, Patrick Wendell, Matei Zaharia
