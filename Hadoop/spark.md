@@ -519,6 +519,30 @@ scala> onlyInterestedIn.saveAsTextFile("file:///home/hadoop/results")
 
    
 
+## Jupyter Notebook
+
+pyspark shell을 jupyter notebook에 연동하여 실행하고 싶다면 다음의 환경변수를 추가한다.
+
+```shell
+# Pyspark Env
+export PYSPARK_DRIVER_PYTHON=jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+```
+
+
+
+설정을 마친 후 pyspark를 실행하고 브라우저에서 접속하면 된다.
+
+```shell
+pyspark --master spark://server01:7077
+```
+
+
+
+
+
+
+
 
 
 ## Ref.
