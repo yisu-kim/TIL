@@ -37,3 +37,12 @@ String india = indiaFormat.format(12324.134);
 System.out.println("India: " + india);  // India: Rs.12,324.13
 ```
 
+
+
+
+
+## Ref.
+
+[Java 8 - Locale](https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html)
+
+[Java 8 - NumberFormat](https://docs.oracle.com/javase/8/docs/api/java/text/NumberFormat.html)
