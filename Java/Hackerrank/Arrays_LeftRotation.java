@@ -15,10 +15,7 @@ public class Arrays_LeftRotation {
     static int[] rotLeft(int[] a, int d) {
         int[] rotated = new int[a.length];
 
-        // static void arraycopy(Object src, int srcPos, Object dest, int destPos, int
-        // length)
-        // Copies an array from the specified source array, beginning at the specified
-        // position, to the specified position of the destination array.
+        // https://docs.oracle.com/javase/7/docs/api/java/lang/System.html#arraycopy(java.lang.Object,%20int,%20java.lang.Object,%20int,%20int)
 
         System.arraycopy(a, d, rotated, 0, a.length - d);
         System.arraycopy(a, 0, rotated, a.length - d, d);
