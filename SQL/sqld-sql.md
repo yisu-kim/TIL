@@ -18,7 +18,7 @@
 
 - DBMS 발전
 
-  - 1980년대: 관계형 데이터베이스가 상용화되어 Oracle, Sybase, DB2와 같은 제품이 사용되었다.
+  - #### 1980년대: 관계형 데이터베이스가 상용화되어 Oracle, Sybase, DB2와 같은 제품이 사용되었다.
   - 1990년대: 객체 지향 정보를 지원하기 위해 객체 관계형 데이터베이스로 발전하였다.
 
 - 관계형 데이터베이스
@@ -1392,6 +1392,1041 @@ SELECT LAST_NAME
      , DEPARTMENT_NAME
 FROM EMP, DEPT
 WHERE EMP FULL JOIN DEPT USING(DEPARTMENT_ID) ;  -- 전체 결과 출력
+```
+
+
+
+### 2.2.2 집합 연산자(SET OPERATOR)
+
+서로 다른 테이블에서 유사한 형태의 결과를 반환하는 것을 하나로 합치고자 할 때 그리고 동일 테이블에서 서로 다른 질의를 수행하여 결과를 합치고자 할 때 사용한다.
+
+SELECT 절의 칼럼수가 동일하고 데이터 타입이 상호 호환 가능해야 한다.
+
+| Set Operator | Description                           |
+| ------------ | ------------------------------------- |
+| UNION        | 합집합. 중복된 행은 한 번만 출력한다. |
+| UNION ALL    | 합집합. 중복된 행도 그대로 표시된다.  |
+| INTERSECT    | 교집합                                |
+| EXCEPT/MINUS | 차집합                                |
+
+
+
+#### UNION
+```sql
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'K02'
+
+UNION
+
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'GK' ;
+```
+
+
+#### UNION ALL
+```sql
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'K02'
+
+UNION ALL
+
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'GK' ;
+```
+
+
+
+#### INTERSECT
+
+```sql
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'K02'
+
+INTERSECT
+
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE POSITION = 'MF'
+ORDER BY 1, 2, 3, 4, 5 ;
+```
+
+
+
+- 다른 표현
+  - <>: 한 칼럼의 정확한 값 비교
+  - NOT IN: 여러 칼럼의 정확한 값 비교
+  - NOT EXIST: 여러 칼럼의 존재 여부 확인 (존재 여부만 체크시 성능 좋다.)
+
+```sql
+-- <>
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'K02'
+      AND POSITION <> 'MF'
+ORDER BY 1, 2, 3, 4, 5 ;
+
+-- NOT IN
+-- <>
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'K02'
+      AND PLAYER_ID NOT IN (SELECT PLAYER_ID
+                            FROM PLAYER
+                            WHERE POSITION = 'MF')
+ORDER BY 1, 2, 3, 4, 5 ;
+
+-- NOT EXISTS
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER X
+WHERE TEAM_ID = 'K02'
+      AND NOT EXISTS (SELECT 1
+                      FROM PLAYER Y
+                      WHERE Y.PLAYER_ID = X.PLAYER_ID
+                            AND POSITION = 'MF')
+ORDER BY 1, 2, 3, 4, 5 ;
+```
+
+
+
+#### EXCEPT/MINUS
+
+```sql
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE TEAM_ID = 'K02'
+
+MINUS
+
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE POSITION = 'MF'
+ORDER BY 1, 2, 3, 4, 5 ;
+```
+
+
+
+
+
+### 2.2.3 계층형 질의와 셀프 조인
+
+#### 계층형 질의
+
+계층형 데이터란 동일 테이블에 계층적으로 상위와 하위 데이터가 포함된 데이터를 말한다.
+
+엔터티를 순환관계 데이터 모델로 설계할 경우 계층형 데이터가 발생한다.
+
+```sql
+WHERE 조건
+START WITH 조건
+CONNECT BY PRIOR 조건
+[ORDER SIBLINGS BY] ;
+```
+
+- START WITH (액세스)
+  계층 구조 전개의 시작 위치 지정
+  생략 하면 루트부터 시작
+
+- CONNECT BY (조인)
+  다음에 전개될 자식 데이터 지정
+
+  - PRIOR
+    CONNECT BY 절에 사용되며 현재 읽은 칼럼을 지정
+    `PRIOR 자식 = 부모` 형태로 사용하면 순방향 전개한다.
+    `PRIOR 부모 = 자식` 형태로 사용하면 역방향 전개한다.
+
+- ORDER SIBLINGS BY
+  형제 노드(동일 LEVEL) 사이에서 정렬 수행
+
+- WHERE (필터링)
+
+  모든 전개를 수행한 후에 지정된 조건을 만족하는 데이터만 추출
+
+
+
+- 가상 칼럼
+
+| Pseudo Column     | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| LEVEL             | 1부터 시작                                     |
+| CONNECT_BY_ISLEAF | 해당 데이터가 리프 데이터면 1, 그렇지 않으면 0 |
+
+
+
+- 함수
+
+| Function                                  | Description                                        |
+| ----------------------------------------- | -------------------------------------------------- |
+| SYS_CONNECT_BY_PATH(칼럼명, '경로분리자') | 루트 데이터로부터 현재 전개할 데이터까지 경로 표시 |
+| CONNECT_BY_ROOT 칼럼명                    | 현재 전개할 데이터의 루트 데이터 표시              |
+
+
+
+예제
+```sql
+-- 순방향: 자식 = 부모
+SELECT LEVEL
+     , LPAD(' ', 4 * (LEVEL-1)) || EMPNO 사원
+     , MGR 관리자
+     , CONNECT_BY_ISLEAF ISLEAF
+FROM EMP
+START WITH MGR IS NULL  -- 생략 가능
+CONNECT BY PRIOR EMPNO = MGR ;  -- 사원 = 매니저
+
+-- 역방향: 부모 = 자식
+SELECT LEVEL
+     , LPAD(' ', 4 * (LEVEL-1)) || EMPNO 사원
+     , MGR 관리자
+     , CONNECT_BY_ISLEAF ISLEAF
+FROM EMP
+START WITH EMPNO = '7876'
+CONNECT BY PRIOR MGR = EMPNO ;  -- 매니저 = 사원
+
+-- 함수
+SELECT CONNECT_BY_ROOT(EMPNO) 루트사원
+     , SYS_CONNECT_BY_PATH(EMPNO, '/') 경로
+     , EMPNO 사원
+     , MGR 관리자
+FROM EMP
+START WITH MGR IS NULL
+CONNECT BY PRIOR EMPNO = MGR ;
+```
+
+
+
+#### 셀프 조인
+
+ALIAS를 통해 동일한 테이블을 복사해서 조인
+
+```sql
+SELECT ALIAS명1.칼럼명, ALIAS명2.칼럼명,
+FROM 테이블1 ALIAS명1, 테이블2 ALIAS명2
+WHERE ALIAS명1.칼럼명2 = ALIAS명2.칼럼명2 ;
+```
+
+
+
+예제
+
+```sql
+-- SELF JOIN
+SELECT E1.EMPNO 사원번호
+     , E1.ENAME 사원이름
+     , E2.ENAME 상사이름
+FROM EMP E1, EMP E2
+WHERE E1.MGR = E2.EMPNO
+ORDER BY E1.EMPNO ;
+
+SELECT E1.EMPNO 사원
+     , E1.MGR 관리자
+     , E2.MGR 차상위_관리자
+FROM EMP E1 LEFT OUTER JOIN EMP E2
+         ON (E1.MGR = E2.EMPNO)
+ORDER BY E2.MGR DESC, E1.MGR, E1.EMPNO ;
+```
+
+
+
+### 2.2.4 서브쿼리
+
+서브쿼리가 메인쿼리에 포함되는 종속 관계
+괄호로 묶여져 있어 먼저 실행된다.
+서브쿼리는 메인쿼리의 칼럼을 모두 사용할 수 있지만 메인 쿼리는 서브쿼리의 칼럼을 사용할 수 없다. 단, 예외적으로 Inline View에 정의된 칼럼은 사용할 수 있다. 또한 SELECT 절에서 넘겨준 값들은 사용할 수 있다.
+
+- 위치
+  - WHERE 절: Nested Subquery
+  - FROM 절: Inline View
+  - SELECT 절: Scalar Subquery
+  - ...
+
+
+예제
+
+```sql
+SELECT ROWNUM
+     , ENAME
+     , SAL
+FROM (SELECT ENAME
+           , SAL
+      FROM EMP
+      ORDER BY SAL DESC)
+WEHRE ROWNUM <= 5 ;
+```
+
+
+
+- SUB QUERY vs. JOIN
+  조인은 두 개의 테이블 위치를 바꾸어 보더라도 같은 결과가 나오지만 서브쿼리의 경우는 주종의 관계이므로 일반적으로 다른 결과가 나온다.
+  서브쿼리를 집합적 개념을 사용할 수 있는 조인으로 바꾸는 것을 권고한다.
+
+
+- 서브쿼리의 종류
+
+|                      | Subquery                        | Description                                                  |
+| -------------------- | ------------------------------- | ------------------------------------------------------------ |
+| 반환되는 데이터 형태 | Single Row(단일행) 서브쿼리     | 실행 결과가 항상 1건 <br>단일행 비교 연산자(=, <, <=, >, >=, !=, <>)와 함께 사용 |
+|                      | Multi Row(다중행) 서브쿼리      | 실행 결과가 여러 건 <br>다중행 비교 연산자(IN, ALL, ANY, SOME, EXISTS)와 함께 사용 <br>단일행 비교 연산자와 혼용 가능 (e.g. >= ANY) |
+|                      | Multi Column(다중칼럼) 서브쿼리 | 실행 결과가 여러 칼럼 <br>메인 쿼리의 조건절에서 여러 칼럼을 동시에 비교할 수 있다. 이때, 비교하고자 하는 칼럼의 개수와 위치가 동일해야 한다. |
+| 동작 방식            | Un-Correlated(비연관) 서브쿼리  | 서브쿼리가 메인쿼리의 칼럼을 가지고 있지 않는 형태 <br>메인 쿼리에 값을 제공하기 위한 목적으로 주로 사용 |
+|                      | Correlated(연관) 서브쿼리       | 서브쿼리가 메인 쿼리의 칼럼을 가지고 있는 형태 <br>메인 쿼리가 먼저 수행되어 읽혀진 데이터를 서브쿼리에서 조건이 맞는지 확인하려는 목적으로 주로 사용 |
+
+
+
+#### 단일 행 서브쿼리
+
+```sql
+SELECT PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+FROM PLAYER
+WHERE TEAM_ID = (SELECT TEAM_ID
+                 FROM PLAYER
+                 WHERE PLAYER_NAME = '정남일')
+ORDER BY PLAYER_NAME ;
+
+SELECT PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+FROM PLAYER
+WHERE HEIGHT <= (SELECT AVG(HEIGHT)
+                 FROM PLAYER)
+ORDER BY PLAYER_NAME ;
+```
+
+
+#### 다중 행 서브쿼리
+
+- 다중행 비교 연산자
+
+| Operator                  | Description                                                  |
+| ------------------------- | ------------------------------------------------------------ |
+| IN (서브쿼리)             | 서브쿼리 결과에 존재하는 임의의 값과 동일한 조건 (Multiple OR 조건) |
+| 비교연산자 ALL (서브쿼리) | 서브쿼리의 결과에 존재하는 모든 값을 만족하는 조건 <br>비교연산자로 `>`를 사용했다면 서브쿼리 결과의 최대값보다 큰 모든 행이 조건을 만족한다. |
+| 비교연산자 ANY (서브쿼리) | 서브쿼리의 결과에 존재하는 어느 하나의 값이라도 만족하는 조건 <br>비교연산자로 `>`를 사용했다면 서브쿼리 결과의 최소값보다 큰 모든 행이 조건을 만족한다. <br>SOME과 동일 |
+| EXISTS (서브쿼리)         | 서브쿼리의 결과를 만족하는 값이 존재하는지 여부를 확인하는 조건 <br>즉 1건만 찾으면 더이상 진행하지 않는다. <br>서브쿼리의 데이터가 필요한 경우가 아니면 SELECT 절에 1, 'X' 같은 의미없는 상수값을 사용한다. <br>EXISTS 연산자의 왼쪽에는 칼럼명이나 상수를 표시하지 않는다. <br>항상 연관 서브쿼리로 사용한다. |
+
+
+
+```sql
+-- ORA-01427: single-row subquery returns more than one row
+SELECT REGION_NAME 연고지명
+     , TEAM_NAME 팀명
+     , E_TEAM_NAME 영문팀명
+FROM TEAM
+WHERE TEAM_ID = (SELECT TEAM_ID
+                  FROM PLAYER
+                  WHERE PLAYER_NAME = '정현수')
+ORDER BY TEAM_NAME ;
+
+-- IN
+SELECT REGION_NAME 연고지명
+     , TEAM_NAME 팀명
+     , E_TEAM_NAME 영문팀명
+FROM TEAM
+WHERE TEAM_ID IN (SELECT TEAM_ID
+                  FROM PLAYER
+                  WHERE PLAYER_NAME = '정현수')
+ORDER BY TEAM_NAME ;
+
+-- ANY
+SELECT LAST_NAME, SALARY
+FROM EMP
+WHERE SALARY >= ANY (SELECT ROUND(AVG(SALARY), 0)
+                     FROM EMP1
+                     GROUP BY DEPARTMENT_ID ) ;  -- 결과 50행
+
+-- ALL
+SELECT LAST_NAME, SALARY
+FROM EMP
+WHERE SALARY >= ALL (SELECT ROUND(AVG(SALARY), 0)
+                     FROM EMP1
+                     GROUP BY DEPARTMENT_ID ) ;  -- 결과 1행
+                     
+-- EXISTS
+SELECT STADIUM_ID
+     , STADIUM_NAME
+FROM STADIUM
+WHERE EXISTS (SELECT 1
+              FROM SCHEDULE
+              WHERE SCHE_DATE BETWEEN '20120501' AND '20120521') ;
+```
+
+
+
+#### 다중 칼럼 서브쿼리
+
+```sql
+SELECT TEAM_ID 팀코드
+     , PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM PLAYER
+WHERE (TEAM_ID, HEIGHT) IN (SELECT TEAM_ID, MIN(HEIGHT)
+                            FROM PLAYER
+                            GROUP BY TEAM_ID)
+ORDER BY TEAM_ID, PLAYER_NAME ;
+```
+
+
+#### 연관 서브쿼리
+
+```sql
+SELECT T.TEAM_NAME 팀명
+     , M.PLAYER_NAME 선수명
+     , M.POSITION 포지션
+     , M.BACK_NO 백넘버
+     , M.HEIGHT 키
+FROM PLAYER M, TEAM T
+WHERE M.TEAM_ID = T.TEAM_ID
+AND M.HEIGHT < (SELECT AVG(S.HEIGHT)
+                FROM PLAYER S
+                WHERE S.TEAM_ID = M.TEAM_ID  -- 메인쿼리의 칼럼
+                AND S.HEIGHT IS NOT NULL
+                GROUP BY S.TEAM_ID)
+ORDER BY 선수명 ;
+```
+
+
+#### 그 밖의 위치에서 사용하는 서브쿼리
+
+- SELECT 절
+
+  Scala Subquery
+
+  1 ROW, 1 COLUMN (단일값) 리턴
+
+```sql
+SELECT PLAYER_NAME 선수명
+     , HEIGHT 키
+     , ROUND((SELECT AVG(HEIGHT)
+              FROM PLAYER X
+              WHERE X.TEAM_ID = P.TEAM_ID)) 팀평균키
+FROM PLAYER P ;
+```
+
+
+  - FROM 절
+
+    Inline View, Dynamic View
+
+    테이블 명이 올 수 있는 곳에 사용하고 중첩이 가능하다.
+```sql
+SELECT T.TEAM_NAME 팀명
+     , P.PLAYER_NAME 선수명
+     , P.BACK_NO 백넘버
+FROM (SELECT TEAM_ID, PLAYER_NAME, BACK_NO
+      FROM PLAYER
+      WHERE POSITION = 'MF') P, TEAM T
+WHERE P.TEAM_ID = T.TEAM_ID
+ORDER BY 선수명 ;
+```
+	인라인 뷰에서는 ORDER BY 절을 사용할 수 있다. 인라인 뷰에 먼저 정렬을 수행하고 정렬된 결과 중 일부 데이터를 추출하는 것은 TOP-N 쿼리라고 한다.
+
+```sql
+-- Oracle
+SELECT PLAYER_NAME 선수명
+     , POSITION 포지션
+     , BACK_NO 백넘버
+     , HEIGHT 키
+FROM (SELECT PLAYER_NAME, POSITION, BACK_NO, HEIGHT
+      FROM PLAYER
+      WHERE HEIGHT IS NOT NULL
+      ORDER BY HEIGHT DESC)
+WHERE ROWNUM <= 5 ;
+
+-- SQL Server
+SELECT TOP(5) PLAYER NAME AS 선수명
+     , POSITION AS 포지션
+     , BACK_NO AS 백넘버
+     , HEIGHT AS 키
+FROM PLAYER
+WHERE HEIGHT IS NOT NULL
+ORDER BY HEIGHT DESC ;
+```
+
+
+  - HAVING 절
+```sql
+SELECT P.TEAM_ID 팀코드
+     , T.TEAM_NAME 팀명
+     , ROUND(AVG(P.HEIGHT), 2) 평균키
+FROM PLAYER P, TEAM T
+WHERE P.TEAM_ID = T.TEAM_ID
+GROUP BY P.TEAM_ID, T.TEAM_NAME
+HAVING AVG(P.HEIGHT) < (SELECT AVG(HEIGHT)
+                        FROM PLAYER
+                        WHERE TEAM_ID = 'K02') ;
+```
+
+
+  - UPDATE 문의 SET 절
+```sql
+UPDATE TEAM A
+SET A.E_TEAM_NAME = (SELECT X.STADIUM_NAME
+                     FROM STADIUM X
+                     WHERE X.STADIUM_ID = A.STADIUM_ID) ;
+```
+
+
+
+  - INSERT문의 VALUES 절
+```sql
+INSERT INTO PLAYER(PLAYER_ID, PLAYER_NAME, TEAM_ID)
+VALUES ((SELECT TO_CHAR(MAX(TO_NUMBER(PLAYER_ID)) + 1) FROM PLAYER), '홍길동', 'K06') ;
+```
+
+
+
+#### VIEW
+
+- Table vs. View
+  - 일반 테이블: 자료, 물리적 테이블
+  - VIEW: 쿼리, 가상 테이블
+
+
+
+- VIEW 장점
+  - 편리성: 복잡한 쿼리나 통계를 보기 위해 뷰를 저장하여 사용할 수 있다.
+  - 보안성: 원하는 일부 칼럼만 보여주고 나머지는 감출 수 있다.
+  - 독립성: 테이블 구조가 변경되어도 응용 프로그램이 바뀌지 않아도 된다.
+
+
+
+- VIEW 생성
+```sql
+CREATE VIEW 뷰명
+AS
+쿼리 ... ;
+```
+
+
+
+- VIEW 사용
+  일반 테이블과 마찬가지 방법을 사용한다.
+```sql
+SELECT *
+FROM 뷰명 ;
+```
+
+
+
+- VIEW 확인
+```sql
+SELECT *
+FROM USER_VIEWS ;
+```
+
+
+- VIEW를 통한 DML
+  - 단수 VIEW: DML 가능
+  - 복합 VIEW: DML 불가능. 하나의 테이블에서 조인된 쿼리, 통계 테이블
+
+
+
+### 2.2.5 그룹 함수(GROUP FUNCTION)
+
+- AGGREGATE FUNCTION
+
+  COUNT, SUM, AVG, MAX, MIN 등의 각종 집계 함수
+
+- GROUP FUNCTION
+
+  ROLLUP, CUBE, GROUPING SETS (소계, 중계, 총합계 등 여러 레벨로 사용할 때)
+
+- WINDOW FUNCTION
+
+  분석, 순위 함수
+
+
+
+#### ROLLUP
+
+소그룹 간 소계 계산 ( =~ EXCEL 부분합)
+
+```sql
+GROUP BY ROLLUP (칼럼명, ...) ;
+```
+
+
+
+예제
+
+```sql
+-- GROUP BY
+SELECT DNAME
+     , JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY DNAME, JOB
+ORDER BY DNAME, JOB ;
+
+-- ROLLUP
+SELECT DNAME
+     , JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY ROLLUP (DNAME, JOB)  -- 부서별/직군별 소계, 전체 총계
+ORDER BY DNAME, JOB ;  -- 계층별 순서는 정렬하나 같은 계층 내 정렬은 ORDER BY 사용할 것
+
+-- ROLLUP 함수 일부 사용
+SELECT DECODE(GROUPING(DNAME), 1, 'All Departments', DNAME) AS DNAME
+     , DECODE(GROUPING(JOB), 1, 'All Jobs', JOB) AS JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY DNAME, ROLLUP (JOB)
+ORDER BY DNAME, JOB ;
+
+-- ROLLUP 함수 결합 칼럼 사용
+SELECT DNAME, JOB, MGR, SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY ROLLUP (DNAME, (JOB, MGR)) ;  -- 부서-(직군, 매니저) 직군과 매니저를 같은 레벨로 취급
+```
+
+
+
+#### GROUPING
+
+ROLLUP이나 CUBE에 의한 소계가 계산된 결과에는 GROUPING(EXPR) = 1
+
+그 외 결과에는 GROUPING(EXPR) = 0
+
+```sql
+GROUPING(칼럼명|표현식)
+```
+
+
+
+예제
+
+```sql
+-- GROUPING
+SELECT DNAME
+     , GROUPING(DNAME)
+     , JOB
+     , GROUPING(JOB)
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY ROLLUP (DNAME, JOB)
+ORDER BY DNAME, JOB ;
+```
+
+
+#### CUBE
+
+GROUP BY 항목들 간 결합 가능한 모든 경우에 대해 다차원적인 소계 계산
+시스템에 부담을 줄 수 있다.
+
+결과는 별도의 정렬 없이 가장 위에 위치
+
+```sql
+GROUP BY CUBE (칼럼명, ...) ;
+```
+
+
+
+예제
+
+```sql
+SELECT CASE GROUPING(DNAME) WHEN 1 THEN 'ALL Departments' ELSE DNAME END AS DNAME
+     , CASE GROUPING(JOB) WHEN 1 THEN 'All Jobs' ELSE JOB END AS JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY CUBE (DNAME, JOB) ;
+```
+
+
+
+#### GROUPING SETS
+
+다양한 소계 집계 가능
+GROUP BY 절을 여러 번 반복하지 않아도 됨
+
+```sql
+GROUP BY GROUPING SETS (칼럼명, ...) ;
+```
+
+
+
+예제
+
+```sql
+SELECT DECODE(GROUPING(DNAME), 1, 'All Departments', DNAME) AS DNAME
+     , DECODE(GROUPING(JOB), 1, 'All Jobs', JOB) AS JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY GROUPING SETS (JOB, DNAME) ;  -- 순서 바꿔도 같은 결과
+
+SELECT DNAME, JOB, MGR, SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY GROUPING SETS ((DNAME, JOB, MGR), (DNAME, JOB), (JOB, MGR)) ;
+```
+
+
+
+- CASE
+
+  CASE/DECODE를 이용해, 소계를 나타내는 필드에 원하는 문자열을 지정할 수 있어 보고서 작성시 유용하게 사용
+
+```sql
+-- CASE
+SELECT CASE GROUPING(DNAME) WHEN 1 THEN 'ALL Departments' ELSE DNAME END AS DNAME
+     , CASE GROUPING(JOB) WHEN 1 THEN 'All Jobs' ELSE JOB END AS JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY ROLLUP (DNAME, JOB)
+ORDER BY DNAME, JOB ;
+
+-- DECODE
+SELECT DECODE(GROUPING(DNAME), 1, 'All Departments', DNAME) AS DNAME
+     , DECODE(GROUPING(JOB), 1, 'All Jobs', JOB) AS JOB
+     , COUNT(*) "Total Empl"
+     , SUM(SAL) "Total Sal"
+FROM EMP, DEPT
+WHERE DEPT.DEPTNO = EMP.DEPTNO
+GROUP BY ROLLUP (DNAME, JOB)
+ORDER BY DNAME, JOB ;
+```
+
+
+
+
+
+### 2.2.6 윈도우 함수(WINDOW FUNCTION)
+
+- 그룹 내 순위함수: RANK, DENSE_RANK, ROW_NUMBER
+- 일반 집계 함수: SUM, MAX, MIN, AVG, COUNT
+- 그룹 내 행 순서 함수: FIRST_VALUE, LAST_VALUE, LAG, LEAD
+- 그룹 내 비율 함수: RATIO_TO_REPORT, PERCENT_RANK, CUME_DIST, NTILE
+
+
+
+```sql
+SELECT WINDOW_FUNCTION (ARGUMENTS) OVER ([PARTITION BY 칼럼] [ORDER BY 절] [WINDOWING 절])
+FROM 테이블명 ;
+```
+- WINDOWING 절
+  함수의 대상이 되는 행 기준의 범위를 강력하게 지정할 수 있다.
+  ROWS는 행 수, RANGE는 값의 범위
+  SQL Server는 지원 안 됨
+
+
+
+#### RANK
+
+특정 항목에 대한 순위
+동일한 값에 대해서는 동일한 순위
+
+- PARTITION: 특정 범위 내에서 순위를 구함
+
+```sql
+-- 전체 급여, 직군별 급여 순위
+SELECT JOB, ENAME, SAL,
+       RANK() OVER (ORDER BY SAL DESC) ALL_RANK,
+       RANK() OVER (PARTITION BY JOB ORDER BY SAL DESC) JOB_RANK
+FROM EMP ;
+
+-- 부서별 급여, 전체 급여 순위
+SELECT DEPTNO, ENAME, SAL
+     , RANK() OVER (PATITION BY DEPTNO ORDER BY SAL DESC) DEPT_RANK
+     , RANK() OVER (ORDER BY SAL DESC) ALL_RANK
+FROM EMP
+ORDER BY DEPTNO, SAL DESC ;
+```
+
+
+
+#### DENSE_RANK
+
+동일한 순위를 하나의 건수 취급
+
+```sql
+SELECT JOB, ENAME, SAL
+     , RANK() OVER (ORDER BY SAL DESC) RANK
+     , DENSE_RANK() OVER(ORDER BY SAL DESC) DENSE_RANK
+FROM EMP ;
+```
+
+
+
+#### ROW_NUMBER
+
+고유 번호
+
+```sql
+SELECT JOB, ENAME, SAL
+     , RANK() OVER (ORDER BY SAL DESC) RANK
+     , ROW_NUMBER() OVER (ORDER BY SAL DESC) ROW_NUMBER
+FROM EMP ;
+```
+
+
+
+#### 일반 집계 함수
+
+```sql
+-- SUM
+SELECT MGR, ENAME, SAL
+     , SUM(SAL) OVER (PARTITION BY MGR) MGR_SUM
+FROM EMP ;
+
+-- 누적합
+SELECT MGR, ENAME, SAL
+     , SUM(SAL) OVER (PARTITION BY MGR
+                      ORDER BY SAL
+                      RANGE UNBOUNDED PRECEDING)
+
+-- AVG
+SELECT DEPTNO, ENAME, SAL
+     , ROUND(AVG(SAL) OVER (PARTITION BY DEPTNO), 0) DEPT_AVG
+FROM EMP ;
+
+SELECT MGR, ENAME, HIREDATE, SAL
+     , ROUND(AVG(SAL) OVER (PARTITION BY MGR
+                            ORDER BY HIREDATE
+                            ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)) AS MGR_AVG
+FROM EMP ;
+
+-- MAX
+---- 매니저별 최고 급여
+SELECT MGR, ENAME, SAL
+     , MAX(SAL) OVER (PARTITION BY MGR) AS MGR_MAX
+FROM EMP ;
+
+---- 부서별 최고 급여
+SELECT DEPTNO, ENAME, SAL
+     , MAX(SAL) OVER (PARTITION BY DEPTNO) DEPT_MAX
+FROM EMP ;
+
+---- 부서별 최고 급여를 받는 사원 정보
+SELECT DEPTNO, ENAME, SAL
+FROM (SELECT DEPTNO, ENAME, SAL
+           , MAX(SAL) OVER (PARTITION BY DEPTNO) DEPT_MAX
+      FROM EMP)
+WHERE SAL = DEPT_MAX ;
+     AS MGR_SUM
+FROM EMP ;
+
+-- COUNT
+SELECT ENAME, SAL
+     , COUNT(*) OVER (ORDER BY SAL
+                      RANGE BETWEEN 50 PRECEDING AND 150 FOLLOWING) AS SIM_CNT
+FROM EMP ;
+
+SELECT DEPTNO, ENAME, SAL
+     , COUNT(*) OVER (PARTITION BY DEPTNO
+                      ORDER BY SAL
+                      RANGE BETWEEN 100 PRECEDING AND 100 FOLLOWING) AS SIM_CNT
+FROM EMP ;
+```
+
+
+
+#### FIRST_VALUE
+
+파티션별 가장 먼저 나온 값을 반환
+
+공동 순위는 인정하지 않는다.
+
+```sql
+SELECT DEPTNO, ENAME, SAL
+     , FIRST_VALUE(ENAME) OVER (PARTITION BY DEPTNO
+                                ORDER BY DESC
+                                ROWS UNBOUNDED PRECEDING) AS DEPT_RICH
+FROM EMP ;
+```
+
+- ROWS UNBOUNDED PRECEDING
+
+  현재 행을 기준으로 파티션 내의 첫 번째 행까지
+
+
+
+#### LAST_VALUE
+
+파티션별 가장 나중에 나온 값 반환
+
+공동 순위는 인정하지 않는다.
+
+```sql
+SELECT DEPTNO, ENAME, SAL
+     , LAST_VALUE(ENAME) OVER (PARTITION BY DEPTNO
+                               ORDER BY SAL DESC
+                               ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS DEPT_POOR
+FROM EMP ;
+```
+
+- ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING
+
+  현재 행을 포함해서 파티션 내의 마지막 행까지
+
+
+
+#### LAG
+
+파티션별 이전 몇 번째 행의 값 반환
+
+```sql
+LAG(칼럼명, 몇번째이전값, NULL일 경우 대체값)
+```
+
+
+
+```sql
+SELECT ENAME, HIREDATE, SAL
+     , LAG(SAL) OVER (ORDER BY HIREDATE) AS PREV_SAL
+FROM EMP
+WHERE JOB = 'SALESMAN' ;
+
+SELECT ENAME, HIREDATE, SAL
+     , LAG(SAL, 2, 0) OVER (ORDER BY HIREDATE) AS PREV_SAL
+FROM EMP
+WHERE JOB = 'SALESMAN' ;
+```
+
+
+
+#### LEAD
+
+파티션별 이후 몇 번째 행의 값 반환
+
+```sql
+LEAD(칼럼명, 몇번째이후값, NULL일 경우 대체값)
+```
+
+
+
+```sql
+SELECT ENAME, HIREDATE, SAL
+     , LEAD(SAL) OVER (ORDER BY HIREDATE) AS PREV_SAL
+FROM EMP
+WHERE JOB = 'SALESMAN' ;
+```
+
+
+
+
+
+#### RATIO_TO_REPORT
+
+파티션 내 전체 SUM(칼럼) 값에 대한 행별 칼럼 값의 백분율 반환
+
+```sql
+SELECT ENAME, SAL
+     , ROUND(RATIO_TO_REPORT(SAL) OVER (), 2) AS R_R
+     , ROUND(SAL / (SELECT SUM(SAL) FROM EMP WHERE JOB='SALESMAN'), 2) AS R_R2  -- 서브쿼리 구현
+FROM EMP
+WHERE JOB = 'SALESMAN' ;
+```
+
+
+
+#### PERCENT_RANK
+
+파티션별 제일 먼저나오는 것을 0으로 제일 늦게 나오는 것을 1로 하여 순서별 백분율 반환
+
+```sql
+SELECT DEPTNO, ENAME, SAL
+     , PERCENT_RANK() OVER (PARTITION BY DEPTNO ORDER BY SAL DESC) AS P_R
+FROM EMP ;
+```
+
+
+
+#### CUME_DIST
+
+파티션별 전체 건수에서 현재 행보다 작거나 같은 건수에 대한 누적백분율 반환
+
+```sql
+SELECT DEPTNO, ENAME, SAL
+     , ROUND(CUME_DIST() OVER (PARTITION BY DEPTNO ORDER BY SAL DESC), 2) AS CUME_DIST
+FROM EMP ;
+```
+
+
+
+#### NTILE
+
+파티션별 전체 건수를 N등분한 결과 반환
+
+```sql
+NTILE(등분할 수)
+```
+
+
+
+```sql
+SELECT ENAME, SAL
+     , NTILE(4) OVER (ORDER BY SAL DESC) AS QUAR_TILE
+FROM EMP ;
+
+SELECT ENAME, SAL
+     , NTILE(4) OVER (PARTITION BY DEPTNO ORDER BY SAL DESC) AS QUAR_TILE
+FROM EMP ;
 ```
 
 
