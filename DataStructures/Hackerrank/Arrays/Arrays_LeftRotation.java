@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.*;
 
-public class Arrays_LeftRotation {
+public class LeftRotation {
 
     static int[] rotLeft(int[] a, int d) {
         int[] rotated = new int[a.length];
