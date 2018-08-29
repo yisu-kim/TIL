@@ -2431,6 +2431,116 @@ FROM EMP ;
 
 
 
+### 2.2.7 DCL(DATA COTROL LANGUAGE)
+
+#### DCL 개요
+
+데이터 보호와 보안을 위해 유저를 생성하고 권한을 제어할 수 있는 명령어를 DCL이라 한다.
+
+- CREATE USER
+- GRANT/REVOKE
+
+
+
+#### 유저와 권한
+
+- 유저 생성
+
+  DBA 권한을 가지고 있어야 유저를 생성할 수 있다.
+
+```sql
+CREATE USER 유저명 IDENTIFIED BY 패스워드 ;
+```
+
+
+
+- 권한 부여
+
+  유저에게 권한을 부여한다. 여러 유저를 지정하거나 `PUBLIC` 키워드로 모든 유저에게 한 번에 권한을 부여할 수 있다.
+
+  `WITH GRANT OPTION`을 통해 권한을 부여할 수 있는 권한도 넘길 수 있다.
+
+```sql
+GRANT 권한 ON 테이블명 TO 유저명 ;
+
+-- PUBLIC
+GRANT 권한 ON 테이블명 TO PUBLIC ;
+
+-- WITH GRANT OPTION
+GRANT 권한 ON 테이블명 TO 유저명 WITH GRANT OPTION ;
+```
+
+
+
+- 권한 회수
+
+  유저에게 부여했던 권한을 회수할 수 있다. `CASCADE` 키워드로 연쇄적인 회수가 가능하다.
+
+```sql
+REVOKE 권한 ON 테이블명 TO 유저명 ;
+```
+
+
+
+- Object 권한
+
+  Object를 생성한 생성자가 모든 권한을 가진다. 마찬가지로 다른 유저에게 권한을 부여할 수 있다.
+
+```sql
+GRANT SELECT ON BOOK TO PUBLIC ;
+
+REVOKE SELECT ON BOOK TO PUBLIC ;
+
+-- USER1 -> USER2
+GRANT SELECT ON BOOK TO USER2 WITH GRANT OPTION ;
+
+-- USER2 -> USER3
+GRANT SELECT ON BOOK TO USER3 ;
+
+-- USER1
+REVOKE SELECT ON BOOK FROM USER2 CASCASE ;
+```
+
+
+
+#### Role을 이용한 권한 부여
+유저가 생성될 때마다 유저에게 필요한 권한을 부여해야 하는데, 이를 효율적으로 관리하기 위해 유저와 권한 사이를 중개하는 Role을 제공한다.
+필요한 권한만 묶어 Role을 생성한 뒤 한꺼번에 유저에게 권한을 부여할 수 있다.
+
+- 역할 생성
+```sql
+CREATE ROLE 역할명 ;
+```
+
+- 생성한 역할 확인
+```sql
+-- DBA
+SELECT *
+FROM DBA_SYS_PRIVS ;
+
+-- USER
+SELECT *
+FROM USER_SYS_PRIVS ;
+```
+
+- 권한 묶음
+```sql
+GRANT 권한 ON 테이블 TO 역할명 ;
+```
+
+- 역할을 이용한 권한 부여
+```sql
+GRANT 역할명 TO 유저명 ;
+```
+
+- 역할 삭제
+```sql
+DROP ROLE 역할명 ;
+```
+
+
+
+
 ## Ref.
 
 - SQL 전문가 가이드 2013 Edition
