@@ -2538,7 +2538,291 @@ GRANT 역할명 TO 유저명 ;
 DROP ROLE 역할명 ;
 ```
 
+- CONNECT, RESOURCE
+  오라클에서 가장 많이 사용하는 Role은 CONNECT와 RESOURCE이다.
+  CONNECT는 로그인 권한 등이 포함되어 있고, RESOURCE는 오브젝트 생성 권한 등이 포함되어 있다.
+  일반적으로 유저를 생성할 때, 두 가지 Role을 사용하여 기본 권한을 부여한다.
+```sql
+GRANCT CONNECT, RESOURCE TO 유저명 ;
+```
 
+
+
+### 2.2.8 절차형 SQL
+
+#### 절차형 SQL 개요
+절차 지향적인 프로그램이 가능하도록 절차형 SQL을 제공한다.
+일반적으로 다음 3가지 유형 중 데이터 무결성 및 집계를 위해 TRIGGER를 사용하는 빈도가 높다. PROCEDURE는 DBA가 주로 사용하며 USER DEFINED FUNCTION는 스칼라 서브쿼리가 대체하고 있다.
+- PROCEDURE
+- TRIGGER
+- USER DEFINED FUNCTION
+
+
+
+
+#### PL/SQL 개요
+Oracle의 PL/SQL은 Block 구조로 되어 있다. 이를 통해 각 기능별로 모듈화가 가능하다.
+SQL 문장과 PROCEDURE 문장이 구분되어 처리된다. 즉 프로그램과 SQL 쿼리 작업을 분리하여 처리한다.
+
+- Block 구조
+  - DECLARE: 선언부(변수, 상수)
+  - BEGIN: 실행부
+  - EXCEPTION: 예외 처리부
+  - END
+
+
+
+- PROCEDURE 생성
+  프로시저를 생성하여 저장한다. 필요할 때 호출하여 실행할 수 있다.
+  - 매개변수: 프로시저가 호출될 때 프로시저 안으로 들어오는 값 또는 프로시저에서 처리한 결과값을 운영체제로 리턴시킬 값을 저장한다.
+  - mode: 매개변수의 유형에는 3가지 mode가 있다.
+    - IN: 운영체제 -> 프로시저
+    - OUT: 프로시저 -> 운영체제
+    - INOUT: IN과 OUT 동시 수행
+  - /: 프로시저를 컴파일하라는 명령어
+```sql
+CREATE [OR REPLACE] Procedure [프로시저명]
+ ( 매개변수 [mode] 데이터타입,
+  ... )
+IS [AS]
+...
+BEGIN
+...
+EXCEPTION
+...
+END ;
+/
+
+```
+
+
+
+- PROCEDURE 삭제
+```sql
+DROP Procedure 프로시저명 ;
+```
+
+
+
+#### Procedure 생성과 활용
+- 프로시저 생성
+  1. DEPT 테이블에 들어갈 칼럼 값(부서코드, 부서명, 위치)을 입력 받는다.
+  2. 입력 받은 부서코드가 존재하는지 확인한다.
+  3. 부서 코드가 존재하면 '이미 등록된 부서번호입니다'라는 메시지를 출력값에 넣는다.
+  4. 부서코드가 존재하지 않으면 입력 받은 필드 값으로 새로운 부서 레코드를 입력한다.
+  5. 새로운 부서가 정상적으로 입력되면 `COMMIT` 명령어를 통해 트랜잭션을 종료한다.
+  6. 에러가 발생하면 모든 트랜잭션을 `ROLLBACK`하고 'ERROR 발생`이라는 메시지를 출력값에 넣는다.
+
+  - 변수 이름: camel 표기법
+  - `:=`: 대입 연산자
+
+```sql
+CREATE OR REPLACE Procedure p_DEPT_insert  -- 1
+(v_DEPTNO in   number,
+ v_dname in   varchar2,
+ v_loc in   varchar2,
+ v_result out varchar2)
+IS
+cnt number := 0
+BEGIN
+  SELECT COUNT(*) INTO CNT  -- 2
+  FROM DEPT
+  WHERE DEPTNO = v_DEPTNO
+            AND ROWNUM = 1 ;
+  if cnt > 0 then  -- 3
+    v_result := '이미 등록된 부서번호이다' ;
+  else
+    INSERT INTO DEPT (DEPTNO, DNAME, LOC)  -- 4
+    VALUES (v_DEPTNO, v_dname, v_loc) ;
+    COMMIT ;  -- 5
+    v_result := '입력 완료!' ;
+  end if ;
+EXCEPTION  -- 6
+  WHEN OTHERS THEN
+    ROLLBACK ;
+    v_result := 'ERROR 발생' ;
+END ;
+/
+```
+
+- 프로시저 활용
+```sql
+EXECUTE 프로시저명(매개변수) ;
+```
+  1. DEPT 테이블을 조회하여 확인한다.
+  2. Procedure를 실행한 결과 값을 받을 변수를 선언한다.
+  3. 존재하는 DEPTNO(10)를 매개변수로 Procedure를 실행한다.
+  4. DEPTNO(10)인 부서는 이미 존재하므로 rslt의 값은 '이미 등록된 부서번호이다'라고 출력된다.
+  5. 존재하지 않는 DEPTNO(50)을 매개변수로 Procedure를 실행한다.
+  6. rslt를 출력하면 '입력 완료!'라고 출력된다.
+  7. 다시 DEPT 테이블을 조회하여 입력한 결과를 확인한다.
+
+```sql
+SELECT * FROM DEPT ;  -- 1
+
+variable rslt varchar2(30) ;  -- 2
+
+EXECUTE p_DEPT_insert(10, 'dev', 'seoul', :rslt) ;  -- 3
+print rslt ;  -- 4
+
+EXECUTE p_DEPT_insert(50, 'NewDev', 'seoul', :rslt) ;  -- 5
+print rslt ;  -- 6
+
+SELECT * FROM DEPT ;  -- 7
+```
+
+
+#### User Defined Function
+사용자 정의 함수는 프로시저와 달리 특정 작업을 수행하고 RETURN을 사용해서 반드시 하나의 값을 되돌려 줘야 한다.
+```sql
+-- create user defined function
+CREATE OR REPLACE Function UTIL_ABS
+(v_input in number)
+  return NUMBER
+IS
+  v_return number := 0 ;
+BEGIN
+  if v_input < 0 then
+    v_return := v_input * -1 ;
+  else
+    v_return := v_input ;
+  end if;
+  RETURN v_return ;
+END ;
+/
+
+-- use user defined function
+SELECT SCHE_DATE 경기일자
+     , HOMETEAM_ID || ' - ' || AWAYTEAM_ID 팀들
+     , HOME_SCORE || ' - ' || AWAY_SCORE 스코어
+     , dbo.UTIL_ABS(HOME_SCORE - AWAY_SCORE) 점수차
+FROM SCHEDULE
+WHERE GUBUN = 'Y'
+ORDER BY SCHE_DATE ;
+```
+
+
+
+#### Trigger 생성과 활용
+
+특정한 테이블에 INSERT, UPDATE, DELETE와 같은 DML문이 수행되었을 때, 데이터베이스에서 자동으로 동작하도록 작성된 프로그램
+
+사용자가 직접 호출하는 것이 아니라 생성 이후 조건이 맞으면 데이트베이스에서 자동 수행된다.
+ 전체 트랜잭션 작업 또는 각 행에 대해 발생된다.
+
+데이터웨어하우스의 실시간 집계성 테이블, Materialized View(물리적 테이블이 존재하는 뷰) 생성시 주로 사용한다.
+
+데이터 무결성을 위한 FK 역할을 수행할 수도 있다.
+
+
+- 트리거 생성
+```sql
+CREATE OR REPLACE Trigger 트리거명
+  BEFORE|AFTER DML명령어
+  ON 테이블명
+  FOR EACH ROW
+DECLARE
+  변수명 테이블명.칼럼명%TYPE ;
+BEGIN
+...
+END ;
+/
+```
+
+
+
+- 레코드 구조체
+
+| 구분   | :OLD                    | :NEW                  |
+| ------ | ----------------------- | --------------------- |
+| INSERT | NULL                    | 입력된 레코드 값      |
+| UPDATE | UPDATE되기 전 레코드 값 | UPDATE된 후 레코드 값 |
+| DELETE | 레코드가 삭제되기 전 값 | NULL                  |
+
+
+
+
+예제
+  1. Trigger를 선언한다.
+  2. 주문 일자, 주문 상품 값을 저장할 변수를 선언하고, 신규 입력된 데이터를 저장한다.
+  3. 먼저 입력된 주문 내역의 주문 일자와 주문 상품을 기준으로 SALES_PER_DATE 테이블에 업데이트한다.
+  4. 처리 결과가 SQL%NOTFOUND이면 해당 주문 일자의 주문 상품 실적이 존재하지 않으니 SALES_PER_DATE 테이블에 새로운 집계 데이터를 업데이트한다.
+```sql
+-- create trigger
+CREATE OR REPLACE Trigger SUMMARY_SALES
+  AFTER INSERT
+  ON ORDER_LIST
+  FOR EACH ROW
+DECLARE
+  o_date ORDER_LIST.order_date%TYPE ;
+  o_prod ORDER_LIST.product%TYPE ;
+BEGIN
+  o_date := :NEW.order_date ;
+  o_prod := :NEW.product ;
+  UPDATE SALES_PER_DATE
+  SET qty = qty + :NEW.qty
+      , amount = amount + :NEW.amount ;
+  WHERE sale_date = o_date
+            AND product = o_prod ;
+  if SQL%NOTFOUND then
+    INSERT INTO SALES_PER_DATE
+    VALUES (o_date, o_prod, :NEW.qyt, :NEW.amount) ;
+  end if ;
+END ;
+/
+
+-- use trigger
+INSERT INTO ORDER_LIST VALUES('20120901', 'MONOPACK', 10, 300000) ;
+INSERT INTO ORDER_LIST VALUES('20120901', 'MONOPACK', 20, 600000) ;
+COMMIT ;
+
+SELECT * FROM ORDER_LIST ;  -- 2개 주문 데이터
+SELECT * FROM SALES_PRE_DATE ;  -- 1개 집계 데이터
+```
+
+
+#### 프로시저와 트리거의 차이점
+프로시저는 BEGIN ~ END 절 내에 TCL을 사용할 수 있지만, 트리거는 사용할 수 없다.
+ROLLBACK을 하면 원 Trriger뿐만 아니라 Trigger로 입력된 정보까지 하나의 트랜잭션으로 인식하여 두 테이블 모두 입력 취소된다.
+
+
+## 2.3 SQL 최적화 기본 원리
+
+### 2.3.1 옵티마이저와 실행계획
+
+#### 옵티마이저
+
+
+
+#### 실행계획
+
+
+
+#### SQL 처리 흐름도
+
+
+
+### 2.3.2 인덱스 기본
+
+#### 인덱스 특징과 종류
+
+
+
+#### 전체 테이블 스캔과 인덱스 스캔
+
+
+
+### 2.3.3 조인 수행 원리
+
+#### NL Join
+
+
+
+#### Sort Merge Join
+
+
+
+#### Hash Join
 
 
 ## Ref.
