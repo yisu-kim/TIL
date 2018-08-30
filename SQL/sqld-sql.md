@@ -2783,23 +2783,134 @@ SELECT * FROM SALES_PRE_DATE ;  -- 1개 집계 데이터
 
 #### 프로시저와 트리거의 차이점
 프로시저는 BEGIN ~ END 절 내에 TCL을 사용할 수 있지만, 트리거는 사용할 수 없다.
-ROLLBACK을 하면 원 Trriger뿐만 아니라 Trigger로 입력된 정보까지 하나의 트랜잭션으로 인식하여 두 테이블 모두 입력 취소된다.
+ROLLBACK을 하면 원 Trigger뿐만 아니라 Trigger로 입력된 정보까지 하나의 트랜잭션으로 인식하여 두 테이블 모두 입력 취소된다.
 
 
 ## 2.3 SQL 최적화 기본 원리
 
 ### 2.3.1 옵티마이저와 실행계획
+옵티마이저는 최적의 실행계획(Execution Plan)을 세운다.
+사용자의 요구사항을 만족하는 결과를 추출할 수 있는 다양한 실행 방법들 중 최적의 실행 방법을 결정한다. 선택한 방법의 적절성 여부는 수행 속도에 큰 영향을 미친다.
+다만 실제 SQL문을 처리해보지 않은 상태에서 최적의 실행 방법을 결정해야 하는 어려움이 있다.
+- 규칙 기반 옵티마이저(RBO, Rule-Based Optimizer)
+- 비용 기반 옵티마이저(CBO, Cost-Based Optimizer)
 
 #### 옵티마이저
+- 규칙 기반 옵티마이저(RBO)
+  다음 순위에 따라 실행 계획을 세운다. 순위의 숫자가 낮을수록 우선 순위가 높다.
+  
+| Rank | Access |
+|---|---|
+| 1 | Single row by rowid |
+| 2 | Single row by cluster join |
+| 3 | Single row by hash cluster key with unique or primary key |
+| 4 | Single row by unique or primary key |
+| 5 | Cluster join |
+| 6 | Hash cluster key |
+| 7 | Indexed cluster key |
+| 8 | Composite index |
+| 9 | Single column index |
+| 10 | Bounded range search on indexed columns |
+| 11 | Unbounded range search on indexed columns |
+| 12 | Sort merge join |
+| 13 | MAX or MIN of indexed column |
+| 14 | ORDER BY on indexed column |
+| 15 | Rull table scan |
+
+1. Single row by rowid
+
+  ROWID를 통해서 테이블에서 하나의 행을 액세스하는 형태
+
+  ROWID는 행이 포함된 데이터 파일, 블록 등의 정보를 가지고 있다.
+
+4. Single row by unique or primary key
+  
+유일 인덱스(Unique Index)를 통해서 하나의 행을 액세스하는 형태
+
+  인덱스에 액세스하고 인덱스에 존재하는 ROWID를 추출하여 테이블에 액세스
+
+8. Composite index
+  복합 인덱스에 동등 연산자(`=`) 조건으로 검색하는 경우
+
+9. Single column index
+
+  단일 칼럼 인덱스에 `=` 조건으로 검색하는 경우
+
+10. Bounded range search on indexed columns
+
+  인덱스가 생성되어 있는 칼럼에 양쪽 범위를 한정하는 형태
+
+  `BETWEEN`, `LIKE`
+
+11. Unbounded range serach on indexed columns
+
+  인덱스가 생성되어 있는 칼럼에 한쪽 범위만 한정하는 형태
+
+
+  `>`, `>=`, `<`, `<=`, 
+...
+
+15. Full table scan
+
+  전체 테이블 액세스
+
+
+- 비용 기반 옵티마이저(CBO)
+  비용이란 SQL문을 처리하기 위해 예상되는 소요시간 또는 자원 사용량을 의미한다.
+  테이블, 인덱스, 칼럼 등 다양한 객체 통계정보와 시스템 통계정보 등을 이용한다.
+
+  정확한 통계 정보를 유지하는 것이 비용 기반 최적화에서 중요한 요소이다.
+  동일한 SQL문에 대해 통계정보, DBMS 버전, DBMS 설정 등의 차이로 다른 실행계획이 생성될 수 있다.
+
+  - 구조
+    - 질의 변환기
+
+    - 대안 계획 생성기
+    
+- 비용 예측기
+
 
 
 
 #### 실행계획
+- 실행계획 구성요소
+  - 연산
+    
+여러 가지 조작을 통해서 원하는 결과를 얻어내는 일련의 작업
 
+    조인 기법, 액세스 기법, 필터, 정렬, 집계 뷰, ...
+  
+- 조인 기법
+    
+두 개의 테이블을 조인할 때 사용할 수 있는 방법
+    
+NL Join, Hash Join, Sort Merge Join, ...
+  
+
+- 조인 순서
+    
+논리적으로 가능한 조인 순서는 n!만큼 존재한다. 현식적으로 한계 있음
+    (
+n: FROM 절에 존재하는 테이블 수)
+  
+- 액세스 기법
+
+    하나의 테이블을 액세스할 때 사용할 수 있는 방법
+    
+인덱스 스캔(Index Scan), 전체 테이블 스캔(Full Table Scan), ...
+  
+- 최적화 정보
+
+    - Cost: 상대적인 비용 정보
+    - Card(Cardinality): 주어진 조건을 만족한 결과 집합 혹은 조인 조건을 만족한 결과 집합 건수
+
+    - Bytes: 결과 집합이 차지하는 메모리 양
 
 
 #### SQL 처리 흐름도
-
+SQL 처리 흐름도는 SQL의 내부적인 처리 절차를 시각적으로 표현한 도표이다. 즉, 실행계획을 시각화한 것이다.
+SQL문 처리를 위한 조인 순서, 테이블 액세스 기법, 조인 기법 등을 표현할 수 있다. 또한 일량(작업 건수, 처리 결과 건수 등)을 함께 표시할 수 있다.
+실행 순서상 왼쪽에 있는 테이블을 Outer Table또는 Driving Table이라 하고, 오른쪽에 있는 테이블을 Inner Table이라 한다.
 
 
 ### 2.3.2 인덱스 기본
