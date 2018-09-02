@@ -1,3 +1,4 @@
+
 // Minimum Swaps 2
 // https://www.hackerrank.com/challenges/minimum-swaps-2/problem
 
@@ -9,9 +10,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.*;
 
-public class Solution {
+public class MinimumSwaps2 {
 
-    // http://snoopybox.co.kr/1789
+    /*
+     * O(n) algorithm
+     * 
+     * http://snoopybox.co.kr/1789
+     */
     static int minimumSwaps(int[] arr) {
         int swaps = 0;
         for (int i = 0; i < arr.length; i++) {
@@ -19,11 +24,11 @@ public class Solution {
                 continue;
             int j = arr[i] - 1;
             // System.out.printf("%d, %d%n", j, i);
-            
+
             int tmp = arr[j];
             arr[j] = arr[i];
             arr[i] = tmp;
-            
+
             swaps++;
             i--;
         }
