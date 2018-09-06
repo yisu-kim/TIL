@@ -48,14 +48,12 @@ first_name = "Hong";
   | int       | 32   | -2147483648 ~ 2147483647                   |
   | long      | 64   | -9223372036854775808 ~ 9223372036854775807 |
 
-  
+
 
   ```java
   int age = 10;
   long countOfStar = 8764827384923849L;
   ```
-
-  
 
 - real number
 
@@ -67,7 +65,6 @@ first_name = "Hong";
   double d2 = 1.234e2;
   ```
 
-  
 
 
 
@@ -94,7 +91,6 @@ first_name = "Hong";
   System.out.println(j);		// 1
   ```
 
-  
 
 ### boolean
 
@@ -451,6 +447,35 @@ for (String number: numbers) {
 }
 ```
 
+- for each문에서 String 사용하기
+
+  >문자열에 [toCharArray()](https://docs.oracle.com/javase/8/docs/api/java/lang/String.html#toCharArray--) 함수를 적용하여 문자 배열로 변환한다.
+  >
+  >이 문자 배열을 for each문으로 순회한다.
+
+  ```java
+  /**
+   * Converts this string to a new character array.
+   *
+   * @return  a newly allocated character array whose length is the length
+   *          of this string and whose contents are initialized to contain
+   *          the character sequence represented by this string.
+   */
+  public char[] toCharArray() {
+      // Cannot use Arrays.copyOf because of class initialization order issues
+      char result[] = new char[value.length];
+      System.arraycopy(value, 0, result, 0, value.length);
+      return result;
+  }
+  ```
+
+  ```java
+  for (char ch: "문자열".toCharArray()) {
+      System.out.println(ch);
+  }
+  ```
+
+
 
 
 ## 06 입출력
@@ -531,7 +556,6 @@ for (String number: numbers) {
   }
   ```
 
-  
 
 > J2SE 5.0 부터 `java.util.Scanner`라는 내장클래스가 새로 추가되었다. 이 클래스를 이용하면 콘솔입력을 쉽게 처리할 수 있다.
 
@@ -550,7 +574,6 @@ for (String number: numbers) {
   }
   ```
 
-  
 
 콘솔 출력의 경우 `System.out.println()`을 주로 사용한다. 이는 `PrintStream` 클래스에 속하는 객체로 문자열을 출력하거나 디버깅 시 주로 사용된다.
 
@@ -628,7 +651,6 @@ for (String number: numbers) {
   }
   ```
 
-  
 
 기존에 존재하는 파일에 내용을 추가하려면 파일을 추가모드로 열어야 한다.
 
@@ -676,7 +698,6 @@ for (String number: numbers) {
   }
   ```
 
-  
 
 마찬가지로 사용자 입력이 아닌 파일로도 입력값을 받을 수 있다.
 
@@ -725,7 +746,6 @@ for (String number: numbers) {
   }
   ```
 
-  
 
 
 
