@@ -1,12 +1,12 @@
 # Scala
-ÇÏÀÌºê¸®µå ÇÔ¼öÇü ÇÁ·Î±×·¡¹Ö ¾ğ¾î
+í•˜ì´ë¸Œë¦¬ë“œ í•¨ìˆ˜í˜• í”„ë¡œê·¸ë˜ë° ì–¸ì–´
 
-- °´Ã¼ÁöÇâ
-- ÇÔ¼öÇü ¾ğ¾î
-- Á¤Àû Å¸ÀÔ
+- ê°ì²´ì§€í–¥
+- í•¨ìˆ˜í˜• ì–¸ì–´
+- ì •ì  íƒ€ì…
 - JVM
-- Java ÄÚµå ½ÇÇà °¡´É (µ¿ÀÏÇÑ ÄÄÆÄÀÏ ¸ğµ¨)
-- µ¿½Ã Ã³¸® ¹× µ¿±âÈ­ Ã³¸®
+- Java ì½”ë“œ ì‹¤í–‰ ê°€ëŠ¥ (ë™ì¼í•œ ì»´íŒŒì¼ ëª¨ë¸)
+- ë™ì‹œ ì²˜ë¦¬ ë° ë™ê¸°í™” ì²˜ë¦¬
 
 
 
@@ -23,19 +23,19 @@
 
 
 ## Installation
-1. JDK 1.8 ¼³Ä¡ 
+1. JDK 1.8 ì„¤ì¹˜ 
     http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
-2. Eclipse Oxygen ¼³Ä¡
+2. Eclipse Oxygen ì„¤ì¹˜
     https://www.eclipse.org/downloads/packages/release/Oxygen/3A
-3. Scala ¼³Ä¡ 
+3. Scala ì„¤ì¹˜ 
     https://www.scala-lang.org/download/
-4. Scala IDE ¼³Ä¡
+4. Scala IDE ì„¤ì¹˜
     http://scala-ide.org/download/current.html
-    À§ »çÀÌÆ®¿¡¼­ Ecplipse 4.7 (Oxygen) Update site installationÀÇ ÁÖ¼Ò¸¦ º¹»çÇÑ´Ù.
-    ÀÌÅ¬¸³½º¸¦ ¿­¾î ¸Ş´ºÀÇ Help - Install New Software¸¦ Å¬¸¯ÇÑ´Ù.
-    Work with Ç×¸ñ¿¡ º¹»çÇÑ ÁÖ¼Ò¸¦ ÀÔ·ÂÇÑ´Ù.
+    ìœ„ ì‚¬ì´íŠ¸ì—ì„œ Ecplipse 4.7 (Oxygen) Update site installationì˜ ì£¼ì†Œë¥¼ ë³µì‚¬í•œë‹¤.
+    ì´í´ë¦½ìŠ¤ë¥¼ ì—´ì–´ ë©”ë‰´ì˜ Help - Install New Softwareë¥¼ í´ë¦­í•œë‹¤.
+    Work with í•­ëª©ì— ë³µì‚¬í•œ ì£¼ì†Œë¥¼ ì…ë ¥í•œë‹¤.
     http://download.scala-ide.org/sdk/lithium/e47/scala212/stable/site
-    Select AllÀ» ¼±ÅÃÇÏ¿© ¼³Ä¡¸¦ ¿Ï·áÇÑ´Ù.
+    Select Allì„ ì„ íƒí•˜ì—¬ ì„¤ì¹˜ë¥¼ ì™„ë£Œí•œë‹¤.
 
 
 
@@ -135,10 +135,10 @@ Hello world Scala
 ## Variable
 - var (mutable)
 - val (immutable)
-> µ¥ÀÌÅÍ Å¸ÀÔ°ú ÃÊ±âÈ­ °ª »ı·« °¡´É
+> ë°ì´í„° íƒ€ì…ê³¼ ì´ˆê¸°í™” ê°’ ìƒëµ ê°€ëŠ¥
 
 ```scala
-var ¶Ç´Â val º¯¼ö : µ¥ÀÌÅÍ Å¸ÀÔ = ÃÊ±âÈ­ °ª
+var ë˜ëŠ” val ë³€ìˆ˜ : ë°ì´í„° íƒ€ì… = ì´ˆê¸°í™” ê°’
 ```
 
 e.g.
@@ -153,8 +153,8 @@ val myVar3 = 30
 
 
 ## Class vs. Object
-- Class´Â °´Ã¼È­ÇÑ ÈÄ¿¡ »ı¼ºµÈ °´Ã¼¸¦ »ç¿ëÇÒ ¼ö ÀÖ´Ù.
-- Object´Â ¹Ù·Î ÇØ´ç °´Ã¼¸¦ »ç¿ëÇÒ ¼ö ÀÖ´Ù.
+- ClassëŠ” ê°ì²´í™”í•œ í›„ì— ìƒì„±ëœ ê°ì²´ë¥¼ ì‚¬ìš©í•  ìˆ˜ ìˆë‹¤.
+- ObjectëŠ” ë°”ë¡œ í•´ë‹¹ ê°ì²´ë¥¼ ì‚¬ìš©í•  ìˆ˜ ìˆë‹¤.
 
 ```scala
 // TestClass.scala
@@ -181,11 +181,11 @@ object TestObject {
 ## Access Modifiers
 
 - Private Members
-  ¸â¹öÀÇ Á¤ÀÇ°¡ Æ÷ÇÔµÈ Å¬·¡½º ¶Ç´Â °´Ã¼ ³»ºÎ¿¡¼­¸¸ Á¢±Ù °¡´É
+  ë©¤ë²„ì˜ ì •ì˜ê°€ í¬í•¨ëœ í´ë˜ìŠ¤ ë˜ëŠ” ê°ì²´ ë‚´ë¶€ì—ì„œë§Œ ì ‘ê·¼ ê°€ëŠ¥
 - Protected Members
-  ¸â¹ö°¡ Á¤ÀÇµÈ Å¬·¡½ºÀÇ ÇÏÀ§ Å¬·¡½º¿¡¼­¸¸ Á¢±Ù °¡´É
+  ë©¤ë²„ê°€ ì •ì˜ëœ í´ë˜ìŠ¤ì˜ í•˜ìœ„ í´ë˜ìŠ¤ì—ì„œë§Œ ì ‘ê·¼ ê°€ëŠ¥
 - Pulbic Members
-  ¸ğµÎ Á¢±Ù °¡´É. »ı·« ½Ã ±âº»°ª.
+  ëª¨ë‘ ì ‘ê·¼ ê°€ëŠ¥. ìƒëµ ì‹œ ê¸°ë³¸ê°’.
 
 
 
@@ -344,13 +344,13 @@ object Test {
 
 ```scala
 // Companion Class
-// static ¾Æ´Ô. °´Ã¼È­ ÇÊ¿ä
+// static ì•„ë‹˜. ê°ì²´í™” í•„ìš”
 class Test1 {
   def testMethod() { println("companion class") }
 }
 
 // Companion Object
-// static. °´Ã¼È­ ºÒÇÊ¿ä
+// static. ê°ì²´í™” ë¶ˆí•„ìš”
 object Test1 {
   def main(args: Array[String]) {
     testMethod()
@@ -363,7 +363,7 @@ object Test1 {
 
 ## Lambda Expression
 
-anonymous functionÀÌ¶ó°íµµ ÇÑ´Ù.
+anonymous functionì´ë¼ê³ ë„ í•œë‹¤.
 
 ```scala
 // general function
@@ -427,7 +427,7 @@ object Test {
 
 ## Overloading
 
-ÇÔ¼öÀÇ ÀÌ¸§Àº °°Áö¸¸ ÆÄ¶ó¹ÌÅÍÀÇ Å¸ÀÔ°ú °³¼ö¸¦ ´Ù¸£°Ô Á¤ÀÇÇÑ´Ù.
+í•¨ìˆ˜ì˜ ì´ë¦„ì€ ê°™ì§€ë§Œ íŒŒë¼ë¯¸í„°ì˜ íƒ€ì…ê³¼ ê°œìˆ˜ë¥¼ ë‹¤ë¥´ê²Œ ì •ì˜í•œë‹¤.
 
 ```scala
 class Calc {
@@ -452,7 +452,7 @@ object Test {
 
 ## Inheritance
 
-Scala¿¡¼­´Â ´ÙÀ½°ú °°Àº ÇüÅÂÀÇ »ó¼ÓÀÌ °¡´ÉÇÏ´Ù.
+Scalaì—ì„œëŠ” ë‹¤ìŒê³¼ ê°™ì€ í˜•íƒœì˜ ìƒì†ì´ ê°€ëŠ¥í•˜ë‹¤.
 
 - Single
 - Multilevel
@@ -482,7 +482,7 @@ object Test {
 
 ## Overriding
 
-ºÎ¸ğ Å¬·¡½ºÀÇ ÇÔ¼ö¸¦ ÀçÁ¤ÀÇÇÑ´Ù.
+ë¶€ëª¨ í´ë˜ìŠ¤ì˜ í•¨ìˆ˜ë¥¼ ì¬ì •ì˜í•œë‹¤.
 
 ```scala
 class Animal {
