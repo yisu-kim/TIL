@@ -1,2 +1,5 @@
 # ignore .vscode/ directory
 .vscode/
+
+# ignore github-markdown.css
+github-markdown.css
