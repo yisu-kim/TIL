@@ -16,13 +16,13 @@ Hypertext Markup Language (HTML) is the standard markup language for <strong>cre
 
 ![difficulty-importance](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7602.jpeg)
 
-* ![W3C(The World Wide Web Consortium)](https://www.w3.org/)
+* [W3C(The World Wide Web Consortium)](https://www.w3.org/)
 
     웹은 W3C에 소속된 여러 기업과 기관들이 논의하여 만들어진다. 필요한 기능을 어떤 태그로 표현할 것인가를 의논한다.
 
 ## 통계에 기반한 학습
 
-![이 웹페이지](https://www.advancedwebranking.com/html/)에서는 전 세계에 있는 웹 페이지에서 사용된 HTML 태그의 빈도수를 계산하여 분석한 결과를 볼 수 있다.
+[이 웹페이지](https://www.advancedwebranking.com/html/)에서는 전 세계에 있는 웹 페이지에서 사용된 HTML 태그의 빈도수를 계산하여 분석한 결과를 볼 수 있다.
 
 25개의 태그를 사용하는 웹 페이지의 수가 가장 많다.
 
@@ -377,7 +377,7 @@ Hypertext Markup Language (HTML) is the standard markup language for <strong>cre
 
 그로부터 30년 후 1990년 스위스 유럽 입자물리 연구소(CERN)에서 최초의 웹브라우저 World Wide Web이 만들어지고 이 이름을 따온 웹(서버)이 탄생한다.
 
-![최초의 웹 페이지](http://info.cern.ch)
+[최초의 웹 페이지](http://info.cern.ch)
 
 ## 인터넷을 여는 열쇠 : 서버와 클라이언트
 
@@ -395,25 +395,29 @@ Hypertext Markup Language (HTML) is the standard markup language for <strong>cre
 
 인터넷에 연결된 하나의 컴퓨터를 호스트라고 한다. 이러한 컴퓨터(웹 서버)를 빌려주는 웹 호스팅 업체들이 있다.
 
-* https://bitballoon.com
-* http://neocities.org
+* Bitballon
+* Neocities
 * Azure Blob
 * Google Cloud Storage
 * Amazon S3
 
-이 중 ![gihub](https://github.com)의 pages 기능을 이용해보자.
+이 중 [gihub](https://github.com)의 pages 기능을 이용해보자.
 
 ![github pages](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7777.jpeg)
 
 1. github에 저장소(repository)를 만든다.
+
     ![create repository](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7820.jpeg)
 2. 지금까지 작성한 코드를 모두 업로드한다.
+
     ![upload files](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7769.jpeg)
 3. Setting의 GitHub Pages 항목에서 master branch를 선택 후 Save 한다.
+
     ![set github pages source](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7775.jpeg)
 4. 표시된 주소를 통해 웹 페이지를 확인한다.
+
     ![check web pages](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7776.png)
 
 ## Ref
 
-    ![생활코딩 Web1 - HTML & Internet](https://opentutorials.org/course/3084)
+[생활코딩 Web1 - HTML & Internet](https://opentutorials.org/course/3084)
