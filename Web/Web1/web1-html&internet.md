@@ -418,6 +418,58 @@ Hypertext Markup Language (HTML) is the standard markup language for <strong>cre
 
     ![check web pages](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7776.png)
 
+## 웹서버 운영하기
+
+웹서버 프로그램 중 Apache를 이용하여 실습한다.
+다음 키워드로 검색해보자.
+> how to install apache http server on windows
+
+### 웹서버 운영 : 윈도우
+
+#### 윈도우에 웹서버 설치
+
+> how to easy install apache on window
+
+[이 사이트](http://httpd.apache.org/docs/current/en/platform/windows.html)에서 추천하는 방법 중 [BitNami WAMP Stack](https://bitnami.com/stack/wamp)를 선택한다.
+본인의 운영체제 환경에 맞는 파일을 다운받아 설치한다.
+설치 과정에서 설치 경로와 MySQL 데이터베이스의 비밀번호를 기억해 두어야 한다.
+설치한 BitNami 매니저를 통해 웹서버를 작동할 수 있다.
+
+#### 웹서버와 http
+
+Go to Application 버튼을 누르면 localhost 페이지로 이동한다.
+참고로 다음 주소로 대체해도 같은 페이지로 이동한다.
+
+    * http://localhost/index.html
+    * http://127.0.0.1/index.html
+
+localhost와 같이 의미 있는 이름을 도메인명(domain name), 숫자로 되어 있는 것을 ip 주소(ip address)라고 부른다.
+
+첫 페이지인 index.html 파일은 Bitnami/wampstack-(버전)/apache2/htdocs 디렉토리 아래 있다.
+
+정리하면 http://localhost/index.html을 웹 브라우저에 입력하면 웹 브라우저는 웹 서버에게 index.html을 요청한다. 웹 서버는 웹 페이지를 저장하기로 약속된 htdocs 디렉토리의 index.html 코드를 웹 브라우저에 전송한다. 웹 브라우저는 코드를 해석하여 화면에 출력한다.
+
+![process](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7925.jpeg)
+
+htdocs 디렉토리의 파일을 모두 삭제하고 이전에 작성한 프로젝트 파일을 모두 옮기면 자신이 작성한 프로젝트가 웹 서버를 통해 화면에 표시된다. 기존에 웹 브라우저를 통해 파일을 여는 방식과 달리 웹 서버가 꺼지면 주소를 통해 웹 페이지에 접근할 수 없게 된다.
+
+![use web server](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7932.jpeg)
+
+http는 HyperText Transfer Protocol의 약자로 웹 브라우저의 입력 주소가 `http://`로 시작하면 통신 규약에 따라 웹 서버에 접속한다. 반면 `file://`로 시작하면 파일을 직접 열어 출력한다.
+
+#### 웹브라우저와 웹서버의 통신
+
+이전에는 한 컴퓨터에서 웹 페이지를 주고 받는 방법을 살펴보았다. 두 대의 컴퓨터 간에는 어떻게 주고 받는지 알아보자.
+
+웹 브라우저가 웹 서버에 접속할 때 웹 서버가 설치된 컴퓨터의 주소(ip 주소)를 사용하는데 127.0.0.1(localhost)이라는 주소뿐만 아니라 고유 주소도 사용한다. 자기 컴퓨터의 ip 주소는 네트워크 공유센터에서 확인할 수 있다.
+
+IPv4 Address의 주소를 웹 브라우저에 입력하면 같은 페이지가 뜨는 것을 확인할 수 있다.
+또한 스마트폰의 웹 브라우저에서도 같은 방법으로 접근할 수 있다. 단, 두 디바이스가 같은 네트워크에 접속한 상태여야 한다.
+
+![access from smart phone](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7942.jpeg)
+
+도메인명으로 접속하거나 다른 네트워크에서도 접속할 수 있게 하려면 추가적인 과정이 필요하다.
+
 ## Ref
 
 [생활코딩 Web1 - HTML & Internet](https://opentutorials.org/course/3084)
