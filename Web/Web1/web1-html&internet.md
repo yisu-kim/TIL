@@ -447,7 +447,7 @@ localhost와 같이 의미 있는 이름을 도메인명(domain name), 숫자로
 
 첫 페이지인 index.html 파일은 Bitnami/wampstack-(버전)/apache2/htdocs 디렉토리 아래 있다.
 
-정리하면 http://localhost/index.html을 웹 브라우저에 입력하면 웹 브라우저는 웹 서버에게 index.html을 요청한다. 웹 서버는 웹 페이지를 저장하기로 약속된 htdocs 디렉토리의 index.html 코드를 웹 브라우저에 전송한다. 웹 브라우저는 코드를 해석하여 화면에 출력한다.
+정리하면 http://localhost/index.html 을 웹 브라우저에 입력하면 웹 브라우저는 웹 서버에게 index.html을 요청한다. 웹 서버는 웹 페이지를 저장하기로 약속된 htdocs 디렉토리의 index.html 코드를 웹 브라우저에 전송한다. 웹 브라우저는 코드를 해석하여 화면에 출력한다.
 
 ![process](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7925.jpeg)
 
@@ -469,6 +469,62 @@ IPv4 Address의 주소를 웹 브라우저에 입력하면 같은 페이지가 �
 ![access from smart phone](https://s3-ap-northeast-2.amazonaws.com/opentutorials-user-file/module/3135/7942.jpeg)
 
 도메인명으로 접속하거나 다른 네트워크에서도 접속할 수 있게 하려면 추가적인 과정이 필요하다.
+
+## 부록 : 코드의 힘
+
+### 부록 : 코드의 힘 - 동영상 삽입
+
+`<iframe>` 태그를 사용하여 유튜브 동영상을 웹 페이지에 추가해보자.
+
+```html
+<!doctype html>
+<html>
+<head>
+    <title>WEB1 - html</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1><a href="index.html">WEB</a></h1>
+    <ol>
+        <li><a href="1.html">HTML</a></li>
+        <li><a href="2.html">CSS</a></li>
+        <li><a href="3.html">JavaScript</a></li>
+    </ol>
+    <h2>HTML</h2>
+    <p>
+        <iframe width="560" height="315"    src="https://www.youtube.com/embed/jSJM9iOiQ1g" frameborder="0" allowfullscreen></iframe>
+    </p>
+    <p><a href="https://www.w3.org/TR/html5/" target="_blank" title="html5 specification">Hypertext Markup Language (HTML)</a> is the standard markup language for <strong>creating <u>web</u> pages</strong> and web applications.Web browsers receive HTML documents from a web server or from local storage and render them into multimedia web pages. HTML describes the structure of a web page semantically and originally included cues for the appearance of the document.
+    <img src="coding.jpg" width="100%">
+    </p><p style="margin-top:45px;">HTML elements are the building blocks of HTML pages. With HTML constructs, images and other objects, such as interactive forms, may be embedded into the rendered page. It provides a means to create structured documents by denoting structural semantics for text such as headings, paragraphs, lists, links, quotes and other items. HTML elements are delineated by tags, written using angle brackets.
+    </p>
+</body>
+</html>
+```
+
+### 부록 : 코드의 힘 - 댓글 기능 추가
+
+댓글 서비스를 구현하는 것은 html만으로는 안 되고 backend에 대한 지식과 기술이 필요하다. 따라서 이 챕터에서는 이미 만들어진 서비스(DISQUS, LiveRE)를 사용해본다.
+
+* DISQUS를 이용한 댓글 기능 추가
+  * [![생활코딩](http://img.youtube.com/vi/LVLHprUg-PM/0.jpg)](http://www.youtube.com/watch?v=LVLHprUg-PM "")
+  * [![DISQUS](http://img.youtube.com/vi/Dr6pSdeJgkA/0.jpg)](http://www.youtube.com/watch?v=Dr6pSdeJgkA "")
+
+### 부록 : 코드의 힘 - 채팅 기능 추가
+
+이 챕터에서는 [tawk](https://www.tawk.to/) 서비스를 이용하여 채팅 기능을 추가한다.
+
+* tawk를 이용한 채팅 기능 추가
+  * [![생활코딩](http://img.youtube.com/vi/d4H1ua2USa8/0.jpg)](http://www.youtube.com/watch?v=d4H1ua2USa8 "")
+  * [![tawk.to](http://img.youtube.com/vi/bHvEqNIW9sE/0.jpg)](http://www.youtube.com/watch?v=bHvEqNIW9sE "")
+
+### 부록 : 코드의 힘 - 방문자 분석기
+
+웹 페이지 분석기는 방문자 수, 방문 경로, 방문자 환경 등의 고급 정보를 제공하는 서비스이다. 대표적으로 Google Analytics가 있다.
+
+* Google Analytics를 이용한 방문자 분석 기능 추가
+  * [![생활코딩](http://img.youtube.com/vi/K3cYoZ9AFOI/0.jpg)](http://www.youtube.com/watch?v=K3cYoZ9AFOI "")
+  * [![Google Analytics](http://img.youtube.com/vi/lZf3YYkIg8w/0.jpg)](http://www.youtube.com/watch?v=lZf3YYkIg8w "")
 
 ## Ref
 
