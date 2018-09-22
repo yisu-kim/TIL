@@ -12,8 +12,6 @@
 
 그러려면 리스트를 돌면서 현재 노드(curr)의 next 포인터가 이전 노드(prev)를 가리키도록 해야 한다. 변경하기 전에 다음 노드(nextTemp)를 임시로 저장할 필요가 있다.
 
-예를 들어, null ← 1 로 변경하려면
-
 1. prev는 null, curr는 head, nextTemp는 curr.next로 설정한다.
 
     ![linked_list_1](../Images/linked_list_1.png)
