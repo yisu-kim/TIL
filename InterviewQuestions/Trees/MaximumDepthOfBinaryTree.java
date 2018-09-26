@@ -11,8 +11,8 @@
  * }
  */
 
-// O(E) = O(V) complexity
-// E: edge, V: node, E = V - 1
+// O(|E|) = O(|V|) complexity
+// E: edge, V: node, |E| = |V| - 1
 class Solution {
     // Recursive solution
     public int maxDepth(TreeNode root) {
