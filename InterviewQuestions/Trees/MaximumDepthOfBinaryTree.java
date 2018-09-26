@@ -13,6 +13,7 @@
 
 // O(|E|) = O(|V|) complexity
 // E: edge, V: node, |E| = |V| - 1
+// code by https://leetcode.com/problems/maximum-depth-of-binary-tree/discuss/34195/Two-Java-Iterative-solution-DFS-and-BFS
 class Solution {
     // Recursive solution
     public int maxDepth(TreeNode root) {
@@ -38,12 +39,36 @@ class Solution {
             maxDepth = Math.max(tempDepth, maxDepth);
             if (node.right != null) {
                 nodeStack.push(node.right);
-                depthStack.push(tempDepth+1);
+                depthStack.push(tempDepth + 1);
             }
             if (node.left != null) {
                 nodeStack.push(node.left);
-                depthStack.push(tempDepth+1);
+                depthStack.push(tempDepth + 1);
             }
+        }
+        return maxDepth;
+    }
+
+    // BFS solution with queue
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int maxDepth = 0;
+        Queue<TreeNode> nodeQueue = new LinkedList<TreeNode>();
+        nodeQueue.offer(root);
+        while (!nodeQueue.isEmpty()) {
+            int size = nodeQueue.size();
+            while (size-- > 0) {
+                TreeNode node = nodeQueue.poll();
+                if (node.left != null) {
+                    nodeQueue.offer(node.left);
+                }
+                if (node.right != null) {
+                    nodeQueue.offer(node.right);
+                }
+            }
+            maxDepth++;
         }
         return maxDepth;
     }
