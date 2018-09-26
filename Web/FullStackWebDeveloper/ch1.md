@@ -62,4 +62,4 @@
 
 * [Github Octovers 2017](https://octoverse.github.com/)
 * [TIOBE Index - The Software Quality Company](https://www.tiobe.com/tiobe-index/)
-* [프로그램 언어의 종류]((https://opentutorials.org/course/2471/13907))
+* [프로그램 언어의 종류](https://opentutorials.org/course/2471/13907)
