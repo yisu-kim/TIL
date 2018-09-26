@@ -42,13 +42,13 @@
 
 * Github Octovers 2017
 
-![github](./Images/github_popular_languages.png)
+![github](Images/github_popular_languages.PNG)
 
 * TIOBE Index
 
-![tiobe](./Images/tiobe_popular_languages.png)
+![tiobe](Images/tiobe_popular_languages.PNG)
 
-![tiobe_graph](./Images/tiobe_popular_languages_graph.png)
+![tiobe_graph](Images/tiobe_popular_languages_graph.PNG)
 
 #### 웹 관련 인기 언어
 
