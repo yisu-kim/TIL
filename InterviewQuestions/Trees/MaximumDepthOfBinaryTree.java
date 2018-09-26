@@ -12,6 +12,8 @@
  */
 
 // Recursive Solution
+// O(E) = O(V) complexity
+// E: edge, V: node, E = V - 1
 class Solution {
     public int maxDepth(TreeNode root) {
         if (root == null) {
