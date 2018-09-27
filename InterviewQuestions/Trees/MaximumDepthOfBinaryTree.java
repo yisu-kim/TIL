@@ -11,8 +11,12 @@
  * }
  */
 
-// O(|E|) = O(|V|) complexity
-// E: edge, V: node, |E| = |V| - 1
+/**
+ * E: edge, V: node, |E| = |V| - 1
+ * O(|V|) time complexity
+ * O(|V|) space complexity
+ */
+
 // code by https://leetcode.com/problems/maximum-depth-of-binary-tree/discuss/34195/Two-Java-Iterative-solution-DFS-and-BFS
 class Solution {
     // Recursive solution
