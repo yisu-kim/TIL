@@ -239,3 +239,136 @@ Content-Type : text/html
 #### 1.3.3 참고 링크
 
 * [HTML - CSS - JS: The Client-Side Of The Web](https://html-css-js.com/)
+
+### 1.4 browser의 동작
+
+서버에서 전송한 HTML과 같은 데이터가 클라이언트에 도착하는 곳은 'Broswer'이다.
+
+브라우저가 전송된 데이터를 어떻게 유저에게 보여주는지 내부에서 이루어지는 동작을 이해하면 웹 개발을 하며 맞닥뜨리는 난해한 문제를 해결할 수 있고 보다 최적화된 웹 개발을 할 수 있다.
+
+#### 1.4.1 The browser's high level structure
+
+브라우저의 구성요소는 다음과 같다.
+
+![Browser components](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/layers.png)
+
+* 사용자 인터페이스(User Interface) : 주소 표시줄, 뒤로/앞으로 버튼, 북마크 메뉴 등을 포함한다. 사용자가 요청한 페이지가 표시된 창을 제외한 모든 부분을 의미한다.
+* 브라우저 엔진(Browser engine) : UI와 렌더링 엔진 간의 작업을 [마샬링](https://ko.wikipedia.org/wiki/%EB%A7%88%EC%83%AC%EB%A7%81_(%EC%BB%B4%ED%93%A8%ED%84%B0_%EA%B3%BC%ED%95%99))한다.
+* 렌더링 엔진(Rendering engine) : 요청된 콘텐츠를 표시한다. 예를 들어, 요청된 컨텐츠가 HTML인 경우 렌더링 엔진은 HTML과 CSS를 파싱하고 파싱된 컨텐츠를 화면에 표시한다.
+* 네트워킹(Networking) : HTTP 요청과 같은 네트워크 호출을 위한 플랫폼 독립적인 인터페이스가 있다. 그 뒤에서는 다른 플랫폼에 대해 다르게 구현된다.
+* UI 백엔드(UI Backend) : 콤보 상자 및 창과 같은 기본 위젯을 그리는 데 사용된다. 이 백엔드는 특정 플랫폼이 아닌 일반적인 인터페이스를 제공한다. 이때 운영 체제 사용자 인터페이스 메소드가 사용된다.
+* JavaScript 인터프리터(JavaScript Interpreter): JavaScript 코드를 파싱하고 실행하는 데 사용된다.
+* 데이터 저장소(Data storage): 이것은 지속성 레이어이다. 브라우저는 쿠키와 같은 모든 종류의 데이터를 로컬에 저장해야 할 수 있다. 또한 브라우저는 localStorage, IndexedDB, WebSQL 및 FileSystem과 같은 저장 메커니즘을 지원한다.
+
+#### 1.4.2 The rendering engine
+
+다른 브라우저는 다른 렌더링 엔진을 사용한다. Internet Explorer는 Trident를 사용하고, Firefox는 Gecko를 사용하고, Safari는 WebKit을 사용한다. Chrome과 Opera(버전 15부터)는 WebKit에서 포크된 Blink를 사용한다. Chrome의 경우 Chromium이라고 불리기도 한다.
+
+다음으로 렌더링 엔진의 기본 흐름을 살펴 본다.
+
+![Rendering engine basic flow](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/flow.png)
+
+1. HTML 문서를 파싱하고 '콘텐츠 트리'에서 요소를 DOM 노드로 변환한다. 엔진은 외부 CSS 파일과 스타일 요소 모두에서 스타일 데이터를 파싱한다. HTML과 CSS를 각각 파싱한 결과는 렌더 트리를 만드는 데 사용된다.
+2. 렌더 트리에는 색상 및 크기와 같은 시각적 속성이 있는 직사각형이 포함되어 있다. 이 직사각형은 정해진 순서에 따라 화면에 표시된다.
+3. 렌더 트리를 만든 후 '레이아웃' 프로세스를 진행한다. 이는 각 노드에 화면 상에 나타나야 하는 정확한 좌표를 주는 것을 의미한다.
+4. 마지막으로 렌더 트리의 각 노드를 돌면서 UI 백엔드 레이어를 사용하여 화면에 페인팅한다.
+
+이것이 점진적인 과정임을 이해하는 것이 중요하다. 사용자 환경을 개선하기 위해 렌더링 엔진은 가능한 한 빨리 화면에 내용을 표시하려고 시도한다. 렌더 트리를 빌드하고 레이아웃하기 전에 모든 HTML이 파싱될 때까지 기다리지 않는다. 콘텐츠의 일부는 파싱되고 화면에 표시되며 나머지 프로세스는 네트워크에서 계속 유지된다.
+
+Webkit 렌더링 엔진의 예시를 통해 다시 한 번 기본 흐름을 이해해본다.
+
+![Webkit main flow](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/webkitflow.png)
+
+1. HTML을 파싱해서 DOM 트리를 만든다. CSS를 파싱해서 스타일 규칙을 만든다. 둘을 합쳐 어떤 요소에 어떤 스타일이 부여되는지 정한다.
+2. 렌더 트리를 그리고 이를 객체화시켜서 key-value 구조로 만든다.
+3. 레이아웃 즉, 어디에 배치되어야 하는지 결정한다.
+4. 실제 화면에 페인팅한다.
+
+#### 1.4.3 Parsing and DOM tree construction
+
+* Parsing-general
+
+  본격적으로 HTML과 CSS 파싱을 살펴보기 전에 우선 기본적인 파싱에 대해 알아본다.
+
+  파싱은 어떤 문서를 코드를 사용할 수 있는 구조로 변환하는 것이다. 그 결과로 문서의 구조를 나타내는 파스 트리를 생성한다.
+
+  예를 들어, `2 + 3 - 1`이라는 표현식을 파싱하면 다음과 같은 트리가 만들어진다.
+
+  ![mathematical expression tree node](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/image009.png)
+
+* HTML Parser
+
+  이제 HTML을 어떻게 파싱하는지 알아본다.
+
+  HTML 파서(parser)는 DOM 요소와 속성 노드에 대한 트리를 생성한다. 이 트리의 루트는 'Document' 객체이다.
+
+  DOM(Document Object Model)은 HTML 문서의 객체 표현이며 HTML 요소의 인터페이스이다. DOM은 마크업(HTML 문서)과 일대일 관계를 갖는다.
+
+  다음 예시를 통해 이해해본다.
+
+  ```html
+  <html>
+    <body>
+      <p>
+        Hello World
+      </p>
+      <div> <img src="example.png"/></div>
+    </body>
+  </html>
+  ```
+
+  ![DOM tree of the example markup](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/image015.png)
+
+  `<html>` 태그와 `HTMLHtmlElement` 노드가 대응되고, `body` 태그와 `HTMLBodyElement` 노드가 대응된다. 그 외 다른 태그와 노드도 각각 일대일로 대응되는 모습을 볼 수 있다. 또한, HTML 문서의 계층적인 구조를 트리가 잘 표현하고 있음을 알 수 있다.
+
+* CSS parsing
+
+  WebKit CSS parser를 예시로 삼아 CSS 파싱 과정을 알아본다.
+
+  ![parsing CSS](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/image023.png)
+
+  Webkit은 고유의 파서 생성기를 사용하여 CSS 파일을 CSS 스타일 시트 객체로 파싱한다. 이 객체는 CSS 규칙을 포함하고 CSS 규칙 객체는 선택자와 선언 객체를 포함한다.
+
+  예시에서 각 선택자와 선언에 대해 노드가 만들어진 것을 볼 수 있다. 선언의 경우 key-value 구조로 되어 있다.
+
+#### 1.4.4 Render tree construction
+
+다음 그림을 통해 위의 과정을 거쳐 만들어진 DOM 트리와 렌더 트리가 어떤 관계인지 알 수 있다.
+
+마크업과 DOM 트리의 관계와 달리 DOM 트리와 렌더 트리는 일대일로 대응되지 않으며 흐름이 달라질 수도 있다.
+
+![The render tree and the corresponding DOM tree](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/image025.png)
+
+#### 1.4.5 Layout
+
+렌더러가 생성되어 크기와 위치 정보를 계산해 트리에 추가한다.
+
+레이아웃 과정은 대개 다음 패턴을 따른다.
+
+1. 부모 렌더러가 자신의 너비를 결정한다.
+2. 부모가 자식을 살펴보고
+
+    1. 자식 렌더러를 배치(x, y 설정)한다.
+    2. 필요할 경우 자식 레이아웃을 호출해 자식의 높이를 계산한다.
+
+3. 부모는 자식의 누적 높이와 그 높이의 마진과 패딩을 사용하여 자신의 높이를 설정한다.
+4. dirty bit를 false로 설정한다.
+
+#### 1.4.6 Painting
+
+페인팅 순서는 다음과 같다.
+
+1. 배경 색깔
+2. 배경 이미지
+3. 테두리
+4. 자식
+5. 아웃라인
+
+또한 CSS 박스 모델을 기억해둔다.
+
+![CSS2 box model](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/image046.jpg)
+
+#### 1.4.7 참고 링크
+
+*[How Browsers Work: Behind the scenes of modern web browsers](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/)
+*[(번역)브라우저는 어떻게 동작하는가?](https://d2.naver.com/helloworld/59361)
