@@ -370,5 +370,95 @@ Webkit 렌더링 엔진의 예시를 통해 다시 한 번 기본 흐름을 이�
 
 #### 1.4.7 참고 링크
 
-*[How Browsers Work: Behind the scenes of modern web browsers](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/)
-*[(번역)브라우저는 어떻게 동작하는가?](https://d2.naver.com/helloworld/59361)
+* [How Browsers Work: Behind the scenes of modern web browsers](https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/)
+* [(번역)브라우저는 어떻게 동작하는가?](https://d2.naver.com/helloworld/59361)
+
+### 1.5 browser에서의 웹 개발
+
+#### 1.5.1 HTML 문서 구조
+
+실습을 위해 다음과 같이 환경을 설정한다.
+
+1. 크롬 브라우저 설치
+2. 크롬 브라우저에서 크롬 개발자도구 열기
+
+    ```txt
+    윈도우 (Ctrl + Shift + i)
+    ```
+
+3. 살펴보고 싶은 웹 사이트 접속하기
+
+웹 사이트(amazon.com)를 살펴보고 알게된 특징은 다음과 같다.
+
+* HTML 문서는 `<html>`이라는 태그로 시작해서 `</html>` 태그로 끝난다.
+* `<head>`에는 문서 자체에 대한 정보가 담겨 있다.
+* `<body>`에는 화면에 표현되는 정보가 담겨 있다.
+* HTML은 계층적이다.
+* HTML은 tag를 사용해서 표현한다.
+* JavaScript와 CSS가 중간중간 등장한다.
+
+#### 1.5.2 HTML 실습
+
+CSS는 `<head>` 태그 안에 작성하고 JavaScript는 `<body>` 태그가 닫히기 전에 위치하는 것이 렌더링 처리를 수월하게 하는 방법이다.
+
+* HTML, CSS, JavaScript 함께 작성하기
+
+  ```html
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width">
+      <title>boostcourse</title>
+      <style>
+        div {
+          color:blue;
+        }
+      </style>
+    </head>
+    <body>
+      <div>웹프론트엔드</div>
+      <script>
+        alert("JavaScript code");
+      </script>
+    </body>
+  </html>
+  ```
+
+* HTML, CSS, JavaScript 나눠서 작성하기
+
+  * HTML
+
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>boostcourse</title>
+        <link rel="stylesheet" href="./main.css">
+      </head>
+      <body>
+        <div>웹프론트엔드</div>
+        <script src="./main.js"></script>
+      </body>
+    </html>
+    ```
+  
+  * CSS
+
+    ```css
+    div {
+      color:blue;
+    }
+    ```
+  
+  * JavaScript
+
+    ```js
+    alert("JavaScript code);
+    ```
+
+#### 1.5.3 참고링크
+
+* [JS Bin](http://www.jsbin.com)
