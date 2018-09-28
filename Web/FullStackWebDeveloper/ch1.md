@@ -462,3 +462,38 @@ CSS는 `<head>` 태그 안에 작성하고 JavaScript는 `<body>` 태그가 닫�
 #### 1.5.3 참고링크
 
 * [JS Bin](http://www.jsbin.com)
+
+### 1.6 웹서버
+
+#### 1.6.1 웹 서버란
+
+웹 서버는 보통 소프트웨어를 뜻하지만 웹 서버 소프트웨어가 동작하는 컴퓨터를 뜻하기도 한다.
+
+이러한 웹 서버의 가장 중요한 기능은 클라이언트(웹 브라우저 또는 웹 크롤러)가 요청하는 HTML 문서나 각종 리소스를 전달하는 것이다. 웹 브라우저나 웹 크롤러가 요청하는 리소스는 컴퓨터에 저장된 정적 데이터 또는 동적인 결과이다. 정적인 데이터란 이미지, HTML 파일, CSS 파일, JavaScript 파일과 같은 파일들을 뜻한다. 동적인 결과란 웹 서버에 의해서 실행되는 프로그램을 통해 만들어진 결과물을 이야기한다.
+
+웹 브라우저와 웹 서버 간에는 HTTP를 통해 통신한다. 다시 말해서 인터넷 상의 데이터를 주고 받기 위해 HTTP라는 프로토콜을 사용하고 이 때문에 URL 주소가 HTTP로 시작한다. 통신이 일어나는 순서는 다음과 같다.
+
+1. 웹 브라우저가 IP 주소 또는 도메인 이름을 통해 웹 서버에 접속한다.
+2. 웹 브라우저가 웹 서버에 HTML 문서를 요청한다.
+3. 웹 서버는 요청된 HTML 문서를 웹 브라우저에 전달한다.
+4. 웹 브라우저는 전송받은 HTML 문서를 해석한다. 추가적으로 필요한 이미지, CSS, JavaScript 등의 리소스에 대한 URL을 추출하여 동시에 여러 개의 리소스를 다시 웹 서버에 요청한다.
+5. 웹 서버는 여러 요청에 대한 응답 결과를 브라우저에 전송한다.
+6. 웹 브라우저는 아까 해석했던 HTML 문서와 읽어들인 여러 응답을 하나로 합쳐 결과를 화면에 표시한다.
+
+#### 1.6.2 웹 서버 소프트웨어 종류
+
+가장 많이 사용하는 웹 서버는 Apache, Nginx, Microsoft IIS가 있다.
+
+Apache 웹 서버는 Apache Software Foundation에서 개발한 웹 서버로 오픈소스 소프트웨어이며, 거의 대부분 운영체제에서 설치하고 사용할 수 있다.
+
+Nginx는 차세대 웹 서버로 불리며 더 적은 자원으로 더 빠르게 데이터를 서비스하는 것을 목적으로 만들어졌다. 마찬가지로 오픈소스 소프트웨어이다.
+
+![market share of web server](Images/netcraft_web_server.PNG)
+
+#### 1.6.3 참고 링크
+
+* [웹 서버](https://ko.wikipedia.org/wiki/%EC%9B%B9_%EC%84%9C%EB%B2%84)
+* [Apache HTTP Server Project](https://httpd.apache.org/)
+* [nginx](https://nginx.org/en/)
+* [Netcraft](https://news.netcraft.com/archives/2017/02/27/february-2017-web-server-survey.html)
+* [NGINX 소개](https://opentutorials.org/module/384/3462)
