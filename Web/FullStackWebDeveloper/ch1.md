@@ -587,3 +587,7 @@ WAS는 세 가지 기본 기능을 가진다.
 </body>
 </html>
 ```
+
+#### 2.1.3 참고 링크
+
+* [HTML Element Reference](https://www.w3schools.com/tags/ref_byfunc.asp)
