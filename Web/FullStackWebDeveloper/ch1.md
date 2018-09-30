@@ -638,3 +638,66 @@ WAS는 세 가지 기본 기능을 가진다.
 #### 2.2.3 참고 링크
 
 * [Standard HTML5 Semantic Layout](https://gist.github.com/thomd/9220049)
+
+### 2.3 HTML 구조설계
+
+#### 2.3.1 HTML 구조설계
+
+구조화 설계는 문서를 작성한다고 생각하면 쉽다. 현업에서는 Presentation 형태의 기획서 또는 디자인 파일을 받아 화면을 보고 그대로 구현한다.
+
+먼저 영역을 나눠 상단/본문/네비게이션 등으로 큰 부분을 분리한다. 그 뒤에 각 영역 안에서 다시 구조를 잡는다.
+
+#### 2.3.2 HTML 구조설계 실습
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+  <header>
+    <h1>Company Name</h1>
+    <img src="..." alt="logo">
+  </header>
+  
+  <section>
+    <nav><ul>
+      <li>Home</li>
+      <li>About</li>
+      <li>Map</li>
+    </ul></nav>
+
+    <section>
+      <button></button>
+      <div><img src="..." alt="img"></div>
+      <div><img src="..." alt="img"></div>
+      <div><img src="..." alt="img"></div>
+      <button></button>
+    </section>
+
+    <section><ul>
+      <li>
+        <h3>About us</h3>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate reprehenderit enim voluptatum consectetur necessitatibus dolorem laborum corporis numquam, deserunt, eveniet assumenda! Hic obcaecati totam, nemo vel perspiciatis eligendi nam doloremque!</div>
+      </li>
+      <li>
+        <h3>What we do</h3>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate reprehenderit enim voluptatum consectetur necessitatibus dolorem laborum corporis numquam, deserunt, eveniet assumenda! Hic obcaecati totam, nemo vel perspiciatis eligendi nam doloremque!</div>
+      </li>
+      <li>
+        <h3>Contact us</h3>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate reprehenderit enim voluptatum consectetur necessitatibus dolorem laborum corporis numquam, deserunt, eveniet assumenda! Hic obcaecati totam, nemo vel perspiciatis eligendi nam doloremque!</div>
+      </li>
+    </ul></section>
+  </section>
+  
+  <footer>
+    <span>Copyright @boostcourse</span>
+  </footer>
+
+</body>
+</html>
+```
