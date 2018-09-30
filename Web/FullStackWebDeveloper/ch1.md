@@ -547,3 +547,43 @@ WAS는 세 가지 기본 기능을 가진다.
 다만 규모가 커질수록 웹 서버와 WAS를 분리한다. 그 목적은 효율성, 장애 극복 기능(failover), 배포 및 유지보수의 편의성 때문인 경우가 많다. 대용량 웹 애플리케이션의 경우 여러 서버를 사용하는데 WAS에서 동작하는 프로그램의 오작동으로 WAS를 재시작해야 할 경우가 발생한다. 이때 앞 단의 웹 서버에서 WAS를 이용하지 못하도록 하고 WAS를 재시작하면 사용자는 장애가 발생했다는 것을 알 수 없게 된다. 즉 서비스를 무중단으로 운영하기 위한 장애 극복 기능을 제공하는 중요한 역할을 한다.
 
 ![web server & was](https://t1.daumcdn.net/cfile/tistory/1415D8274A669970AA)
+
+## 2 HTML - FE
+
+### 2.1 HTML Tags
+
+#### 2.1.1 HTML tag의 종류
+
+태그는 그 의미에 맞춰서(semantic) 사용해야 한다. 시각장애인의 접근성을 높일 수 있고 구글 등 검색 프로그램 또한 태그를 살펴서 검색 기능을 제공하므로 의미에 맞는 태그 사용은 매우 중요하다.
+
+* 링크: `<a>`
+* 이미지: `<img>`
+* 목록: `<ul>`, `<li>`
+* 제목: `<h1>` ~ `<h6>`
+
+그 밖에 단락을 나타내는 `<p>` 태그와 영역을 표시하는 `<div>` 태그도 자주 사용한다.
+
+#### 2.1.2 HTML tag 실습
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+  <div>
+    <h1>반갑습니다</h1>
+    여기 여러분들이 좋아하는 과일이 있어요.
+    <ul>
+      <li><a href="www.apple.com">사과</a></li>
+      <li>바나나</li>
+      <li>메론</li>
+      <li>귤</li>
+    </ul>
+  </div>
+</body>
+</html>
+```
