@@ -591,3 +591,50 @@ WAS는 세 가지 기본 기능을 가진다.
 #### 2.1.3 참고 링크
 
 * [HTML Element Reference](https://www.w3schools.com/tags/ref_byfunc.asp)
+
+### 2.2 HTML Layout 태그
+
+#### 2.2.1 레이아웃을 위한 태그
+
+레이아웃(Layout)이란 HTML의 각 정보 요소를 화면상의 어느 위치에 둘지 결정하는 것을 뜻한다.
+
+* `<header>`
+* `<nav>`
+* `<section>`
+* `<aside>`
+* `<footer>`
+
+![html layout tags](https://msdnshared.blob.core.windows.net/media/MSDNBlogsFS/prod.evol.blogs.msdn.com/CommunityServer.Blogs.Components.WeblogFiles/00/00/00/91/03/metablogapi/5086.HTML5PageLayout_2.jpg)
+
+#### 2.2.2 레이아웃 태그 실습
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+  <header>header</header>
+  <div id="container">
+    <nav><ul>
+      <li>home</li>
+      <li>news</li>
+      <li>sports</li>
+    </ul></nav>
+    <aside><ul>
+      <li>로그아웃</li>
+      <li>오늘의 날씨</li>
+      <li>운세</li>
+    </ul></aside>
+  </div>
+  <footer>footer</footer>
+</body>
+</html>
+```
+
+#### 2.2.3 참고 링크
+
+* [Standard HTML5 Semantic Layout](https://gist.github.com/thomd/9220049)
