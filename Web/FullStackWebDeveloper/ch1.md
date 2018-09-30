@@ -701,3 +701,73 @@ WAS는 세 가지 기본 기능을 가진다.
 </body>
 </html>
 ```
+
+### 2.4 class와 id 속성
+
+#### 2.4.1 Class와 ID
+
+* Class
+  * 하나의 HTML 문서 안에 중복해서 사용할 수 있다.
+  * 하나의 태그에 여러 개의 다른 class 이름을 공백을 기준으로 나열할 수 있다.
+  * 홈페이지 전체적인 스타일을 일관성있게 지정하기 위해서는 class 사용이 필수적이다.
+
+* ID
+  * 고유한 속성으로 한 HTML 문서에 하나만 사용할 수 있다.
+  * 고유한 ID 값이 있으면 하나하나에 특별한 제어를 할 수 있으면 검색에도 용이하다.
+
+참고로 회사마다 개발 단계에서 어떠한 약속(convention)을 만들어 이를 따르기도 한다. 예를 들어 ID 사용을 금지하고 class만 사용하기도 한다.
+
+#### 2.4.2 Class와 ID 실습
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+  <header>
+    <h1>Company Name</h1>
+    <img src="..." alt="logo">
+  </header>
+  
+  <section>
+    <nav id="nav-section"><ul>
+      <li>Home</li>
+      <li>About</li>
+      <li>Map</li>
+    </ul></nav>
+
+    <section id="roll-section">
+      <button></button>
+      <div><img src="..." alt="img"></div>
+      <div><img src="..." alt="img"></div>
+      <div><img src="..." alt="img"></div>
+      <button></button>
+    </section>
+
+    <section><ul>
+      <li class="our_description">
+        <h3>About us</h3>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate reprehenderit enim voluptatum consectetur necessitatibus dolorem laborum corporis numquam, deserunt, eveniet assumenda! Hic obcaecati totam, nemo vel perspiciatis eligendi nam doloremque!</div>
+      </li>
+      <li class="our_description">
+        <h3>What we do</h3>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate reprehenderit enim voluptatum consectetur necessitatibus dolorem laborum corporis numquam, deserunt, eveniet assumenda! Hic obcaecati totam, nemo vel perspiciatis eligendi nam doloremque!</div>
+      </li>
+      <li class="our_description">
+        <h3>Contact us</h3>
+        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptate reprehenderit enim voluptatum consectetur necessitatibus dolorem laborum corporis numquam, deserunt, eveniet assumenda! Hic obcaecati totam, nemo vel perspiciatis eligendi nam doloremque!</div>
+      </li>
+    </ul></section>
+  </section>
+  
+  <footer>
+    <span>Copyright @boostcourse</span>
+  </footer>
+
+</body>
+</html>
+```
