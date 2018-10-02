@@ -771,3 +771,69 @@ WAS는 세 가지 기본 기능을 가진다.
 </body>
 </html>
 ```
+
+## 3 CSS - FE
+
+### 3.1 CSS 선언방법
+
+#### 3.1.1 CSS의 구성
+
+```css
+span {
+  color : red;
+}
+```
+
+* span: 선택자(selector)
+* color: 속성(property)
+* red: 값(value)
+
+#### 3.1.2 style을 HTML 페이지에 적용하는 3가지 방법
+
+1. inline
+    HTML 태그 안에 적용한다.
+    가장 우선순위가 높다.
+
+    ```html
+    <p style="color:red;">
+    ```
+2. internal
+    `<style>` 태그로 지정한다.
+    HTML 구조와 스타일이 섞이기 때문에 유지보수가 어렵다.
+    단, 별도의 CSS 파일이 필요 없고 브라우저가 CSS 파일을 서버에 요청하지 않아도 된다.
+
+    ```html
+    <head>
+      <style>
+      p {
+        font-size:2em;
+      }
+      </style>
+    </head>
+    ```
+3. external
+    링크를 사용해 외부 파일(.css)로 지정한다.
+    HTML 구조와 스타일이 분리되어 있어 유지보수가 쉽기 때문에 가장 많이 사용되는 방식이다.
+
+    ```html
+    <head>
+      <link rel="stylesheet" href="style.css"
+    </head>
+    ```
+    ```css
+    p {
+      border:1px solid gray;
+    }
+    ```
+
+세 방식의 우선 순위를 정리하면 다음과 같다.
+
+```txt
+inline > internal = external
+```
+
+internal과 external의 우선순위가 동등하므로 겹치는 선언이 있을 경우 나중에 선언된 속성이 반영된다.
+
+#### 3.1.3 참고 링크
+
+* [Difference Between Inline, External and Internal CSS Styles](https://www.hostinger.com/tutorials/difference-between-inline-external-and-internal-css)
