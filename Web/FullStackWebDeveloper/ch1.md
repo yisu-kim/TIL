@@ -1082,3 +1082,59 @@ CSS Selector란 HTML 요소를 tag, id, html 태그 속성 등을 통해 쉽게 
 #### 3.3.3 참고 링크
 
 * [CSS Selectors Cheatsheet](https://gist.github.com/magicznyleszek/809a69dd05e1d5f12d01)
+
+### 3.4 CSS 기본 Style 변경하기
+
+#### 3.4.1 font 색상 변경
+
+`<color>` 태그를 사용한다.
+
+다음 예시에서 알파값을 적용한 rgba를 제외한 모든 색상이 red와 같다.
+
+```css
+span {
+  color : red;
+  color : rgb(255, 0, 0);
+  color : rgba(255, 0, 0, 0.5);
+  color : #ff0000;
+  color : #f00;
+}
+```
+
+#### 3.4.2 font 사이즈 변경
+
+기본 픽셀값을 16px이다. 따라서 1em은 16px * 1 = 16px이 된다.
+
+하지만 상속을 받을 경우 기본 픽셀값이 바뀔 수 있고 이에 따라 배수를 적용한 결과값도 달라질 수 있다.
+
+```css
+div {
+  font-size : 1em; /* 16px */
+  font-size : 32px;
+}
+
+div > span {
+  font-size : 1em; /* 32px */
+}
+```
+
+#### 3.4.3 배경색과 배경이미지
+
+```css
+span {
+  background-color : #ff0;
+  background-image : (url:"image.jpg");
+}
+```
+
+#### 3.4.4 글씨체/글꼴
+
+```css
+span {
+  font-family : sans-serif;
+}
+```
+
+#### 3.4.5 참고 링크
+
+* [bootstrap](http://getbootstrap.com/components/)
