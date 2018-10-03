@@ -837,3 +837,130 @@ internal과 external의 우선순위가 동등하므로 겹치는 선언이 있�
 #### 3.1.3 참고 링크
 
 * [Difference Between Inline, External and Internal CSS Styles](https://www.hostinger.com/tutorials/difference-between-inline-external-and-internal-css)
+
+### 3.2 상속과 우선순위 결정
+
+#### 3.2.1 상속
+
+상위 계층에 적용한 스타일은 하위 계층에도 반영된다.
+
+이러한 상속과 같은 특성 때문에 여러 단계로 중첩된 엘리먼트에 한 번에 속성을 부여할 수 있다.
+
+하지만 box-model이라 불리는 width, height, padding, border와 같은 크기와 배치에 관련된 속성들은 하위 엘리먼트로 상속되지 않는다.
+
+아래 예시의 경우 body > div 하위의 모든 속성들은 font-size가 30px이지만, border와 padding 속성은 반영되지 않는다.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+  <style>
+    div ul li div p {
+      color:green;
+    }
+    body > div {
+      font-size:30px;
+      border:2px solid slategray;
+      padding:30px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <span>my text is upper!</span>
+    <ul>
+      <li>
+        <span>my text is dummy</span>
+        <div>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta in, nam deleniti, commodi ut alias quo voluptatum beatae, dolorum iure quaerat nostrum aliquid omnis voluptate adipisci natus eligendi maxime ipsa.</p>
+        </div>
+      </li>
+      <li></li>
+    </ul>
+  </div>
+</body>
+</html>
+```
+
+#### 3.2.2 우선순위 결정
+
+* cascading
+  CSS는 여러가지 스타일 정보를 기반으로 최종적으로 '경쟁'에 의해서 적절한 스타일이 반영된다.
+
+* 선언 방식에 따른 차이
+  internal과 external는 같은 우선순위를 갖기 때문에 이후 소개되는 다양한 스타일 정보를 기반으로 '경쟁'에 의해 최종 결정된다.
+
+  ```txt
+  inline > internal = external
+  ```
+
+  다음 예시의 경우 css.css 파일에서 div의 color를 blue로 주었다면 blue가 적용된다. 이는 css.css 파일이 style 태그보다 나중에 선언되었기 때문이다.
+
+  ```html
+  <head>
+  <style>div {coloe:red;}</style>
+  <link rel="stylesheet" href="css.css">
+  </head>
+  ```
+
+* 같은 선택자(selector)에 대해서 나중에 선언된 것이 우선해서 적용된다.
+  따라서 다음 예시는 blue가 적용된다.
+
+  ```css
+  span {
+    color : red;
+  }
+
+  span {
+    color : blue;
+  }
+  ```
+
+* 더 구체적으로 표현된 선택자가 우선해서 적용된다.
+  따라서 다음 예시는 red가 적용된다.
+
+  ```css
+  body > span {
+    color : red;
+  }
+
+  span {
+    color : blue;
+  }
+  ```
+
+* 속성 종류에 따른 차이
+  id를 금메달, class를 은메달, element를 동메달로 이해하면 우선순위를 알기 쉽다.
+
+  ```txt
+  id > class > element
+  ```
+
+  따라서 다음 예시는 red가 적용된다.
+
+  ```html
+  <div id="a" class="b">
+    ...
+  </div>
+  ```
+
+  ```css
+  #a {
+    color : red;
+  }
+
+  .b {
+    color : blue;
+  }
+
+  div {
+    color : green;
+  }
+  ```
+
+#### 3.2.3 참고 링크
+
+* [Specificity](http://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)
