@@ -964,3 +964,121 @@ internal과 external의 우선순위가 동등하므로 겹치는 선언이 있�
 #### 3.2.3 참고 링크
 
 * [Specificity](http://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)
+
+### 3.3 CSS Selector
+
+#### 3.3.1 CSS Selector
+
+CSS Selector란 HTML 요소를 tag, id, html 태그 속성 등을 통해 쉽게 찾아주는 방법이다.
+
+* element에 style을 지정하기 위한 기본 선택자
+  * tag로 지정하기
+
+    ```html
+    <head>
+    span {
+      color : red;
+    }
+    </head>
+    <body>
+      <span>Hello World!</span>
+    </body>
+    ```
+
+  * id로 지정하기
+
+    ```html
+    <head>
+    #spantag {
+      color : red;
+    }
+    </head>
+    <body>
+      <span id="spantag">Hello World!</span>
+    </body>
+    ```
+
+  * class로 지정하기
+  
+    ```html
+    <head>
+    .spanClass {
+      color : red;
+    }
+    </head>
+    <body>
+      <span class="spanClass">Hello World!</span>
+    </body>
+    ```
+
+#### 3.3.2 CSS Selector의 다양한 활용
+
+* id, class 요소 선택자와 함께 활용
+
+  ```css
+  #myid {color : red}
+  div.myclassname {color : red}
+  ```
+
+* 그룹 선택
+
+  ```css
+  h1, span, div {color : red}
+  h1, span, div#id {color : red}
+  h1, span, div.classname {color : red}
+  ```
+
+* 하위 요소 선택
+
+  ```html
+  <div id="jisu">
+    <div>
+      <span>span tag</span>
+    </div>
+    <span>span tag 2</span>
+  </div>
+  ```
+
+  * 자손 선택 (공백)
+    다음의 경우 모든 span 태그에 red 색상이 적용된다.
+
+    ```css
+    #jisu span {color : red}
+    ```
+
+  * 자식 선택 (>)
+    다음의 경우 span tag 2에만 red 색상이 적용된다.
+
+    ```css
+    #jisu > span {color : red}
+    ```
+
+* n 번째 하위 요소 선택
+
+  ```html
+  <div id="jisu">
+    <h2>단락 선택</h2>
+    <p>첫 번째 단락입니다.</p>
+    <p>두 번째 단락입니다.</p>
+    <p>세 번째 단락입니다.</p>
+    <p>네 번째 단락입니다.</p>
+  </div>
+  ```
+
+  * n 번째 자식 선택 (nth-child)
+    다음의 경우 첫 번째 단락에 red 색상이 적용된다.
+
+    ```css
+    #jisu > p:nth-child(2) {color : red}
+    ```
+  
+  * 특정 타입 중 n 번째 자식 선택 (nth-of-type)
+    다음의 경우 두 번째 단락에 blue 색상이 적용된다.
+
+    ```css
+    #jisu > p:nth-of-type(2) {color : blue}
+    ```
+
+#### 3.3.3 참고 링크
+
+* [CSS Selectors Cheatsheet](https://gist.github.com/magicznyleszek/809a69dd05e1d5f12d01)
