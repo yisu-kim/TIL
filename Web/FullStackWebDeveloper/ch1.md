@@ -1138,3 +1138,219 @@ span {
 #### 3.4.5 참고 링크
 
 * [bootstrap](http://getbootstrap.com/components/)
+
+### 3.5 Element가 배치되는 방법 (CSS layout)
+
+#### 3.5.1 엘리먼트가 배치되는 방식
+
+엘리먼트를 화면에 배치하는 것을 layout 작업이라고 하고, Rendering 과정이라고도 한다. 편의상 배치로 일컫는다.
+
+엘리먼트는 위에서 아래로 순서대로 블럭을 이루며 배치되는 것이 기본이다. 하지만 웹사이트의 배치는 다양하게 표현 가능해야 하기 때문에, 이를 위해 css에서 추가적인 속성을 제공한다.
+
+다음 속성을 중심으로 배치 과정을 이해해 본다.
+
+* display
+* position
+* float
+
+#### 3.5.2 블록으로 쌓이는 엘리먼트 (display:block)
+
+display 속성이 block 또는 inline-block인 경우 그 엘리먼트는 벽돌을 쌓듯이 위에서 아래로 쌓인다.
+
+```html
+<div>block1</div>
+<p>block2</p>
+<div>block3</div>
+```
+
+#### 3.5.3 옆으로 흐르는 엘리먼트 (display:inline)
+
+display 속성이 inline인 경우 좌측에서 우측과 아래쪽으로 빈 자리를 차지하며 흐른다. 높이와 넓이를 지정해도 반영되지 않는다.
+
+```html
+<div>
+  <span>나는 어떻게 배치되나요?</span>
+  <span>좌우로 배치되는군요</span>
+  <a>링크는요?</a>
+  <strong>링크도 강조도 모두 좌우로 흐르는군요</strong>
+  모두 display 속성이 inline인 엘리먼트이기 때문입니다.
+</div>
+```
+
+#### 3.5.4 좀 다르게 배치하기 (position:static, relative, absolute, fixed)
+
+position 속성으로 특별한 배치를 할 수 있다.
+
+  1. static은 기본값으로 그냥 순서대로 배치된다.
+
+  2. absolute는 기준점에 따라서 특별한 위치에 위치한다.
+
+      top / right / bottom / left 로 설정한다. 기준점은 상위 엘리먼트를 단계적으로 찾아가는데 static이 아닌 position 속성이 기준점이다. 모든 엘리먼트의 position 속성이 static이면 body를 기준점으로 삼는다.
+
+  3. relative는 원래 자신이 위치해야 할 곳을 기준으로 이동한다.
+
+      top / right / bottom / left 로 설정한다.
+
+  4. fixed는 viewport(전체화면) 좌측, 맨 위를 기준으로 동작한다.
+
+```html
+<body>
+
+  <div class="wrap">
+    <div class="static">static(default)</div>
+    <div class="relative">relative(left:10px)</div>
+    <div class="absolute">absolute(left:130px;top:30px)</div>
+    <div class="fixed">fixed(top:250px)</div>
+  </div>
+  
+</body>
+```
+
+```css
+.wrap {
+  position:relative;
+}
+
+.wrap > div {
+  width:150px;
+  height:100px;
+  border:1px solid gray;
+  font-size:0.7em;
+  text-align:center;
+  line-height:100px;
+}
+
+.relative {
+  position:relative;
+  left:10px;
+  1top:10px;
+}
+
+.absolute {
+  position:absolute;
+  left:130px;
+  top:30px;
+}
+
+.fixed {
+  position:fixed;
+  top:250px;
+}
+```
+
+#### 3.5.5 간격을 다르게 해서 배치하기 (margin)
+
+margin은 위 / 우 / 아래 / 좌 엘리먼트와 현재 엘리먼트 간의 간격이다. 따라서 그 간격만큼 위치가 달라진다.
+
+```html
+<div>left</div>
+<div class="bottom">bottom</div>
+```
+
+```css
+* {
+  border:1px solid gray;
+}
+
+.bottom {
+  margin-top:120px;
+  margin-left:100px;
+}
+```
+
+#### 3.5.6 기본 배치에서 벗어나 떠있기 (float:left, right)
+
+float 속성으로 원래 flow에서 벗어나 둥둥 떠다닐 수 있다. float는 일반적인 배치 상태에서 벗어나 특별히 배치된다. 따라서 뒤의 block 엘리먼트가 float된 엘리먼트를 의식하지 못하고 중첩돼서 배치된다.
+
+```html
+<body>
+  <div class="blue"></div>
+  <div class="green"></div>
+  <div class="red"></div>
+</body>
+```
+
+```css
+div {
+  width:100px;height:100px;
+  border:1px solid gray;
+  font-size:0.7em;
+}
+
+
+.blue {  
+  background-color:blue;
+}
+
+.green {
+  float:left;
+  background-color:green;
+}
+
+.red {
+  background-color:red;
+  /*숨겨진 녹색을 드러내기 위해 relative로 살짝옮김*/
+  position:relative;
+  left:10px;
+}
+```
+
+#### 3.5.7 하나의 block 엘리먼트는 box 형태 (box-model)
+
+block 엘리먼트의 경우 box의 크기와 간격에 관한 속성으로 배치를 추가 결정한다. margin, padding, border, outline으로 생성된다.
+
+box-shadow 속성은 border 밖에 테두리를 그릴 수 있는 속성으로 box-model에 포함된다.
+
+#### 3.5.8 엘리먼트의 크기는 부모의 크기가 기본
+
+block 엘리먼트의 크기는 기본적으로 부모 엘리먼트의 크기만큼을 가진다. 다시 말해서 초과하지 않는다.
+
+* box-sizing과 padding
+
+  padding 속성을 늘리면 엘리먼트의 크기가 달라질 수 있다. box-sizing 속성으로 이를 컨트롤 한다. 예를 들어 box-sizing 속성을 border-box로 설정하면 엘리먼트의 크기를 고정하면서 padding 값만 늘릴 수 있다.
+
+  ```html
+  <body>
+
+    <div class="box-content">
+      box-content<br>(100px보다커짐)
+    </div>
+
+    <div class="box-border">
+      box-border<br>(100px유지)
+    </div>
+
+  </body>
+  ```
+
+  ```css
+  div {
+    width:100px;
+    height:100px;
+    border:1px solid red;
+    padding:50px;
+    font-size:0.8em;
+  }
+
+  .box-content {
+    1box-sizing:content-box;
+  }
+
+  .box-border {
+    box-sizing:border-box;
+  }
+  ```
+
+#### 3.5.9 layout 구현방법
+
+전체 레이아웃은 float를 잘 사용해서 2단, 3단 칼럼 배치를 구현한다. 최근 css-grid나 flew 속성 등 layout을 위한 속성이 지원되니 브라우저 지원범위를 확인해서 사용하는 것을 추천한다.
+
+특별한 위치에 배치하기 위해서는 position absolute를 사용하고 기준점을 relative로 설정한다.
+
+네비게이션과 같은 엘리먼트는 block 엘리먼트를 inline-block으로 변경해서 가로로 배치하기도 한다.
+
+엘리먼트 안의 텍스트 간격과 다른 엘리먼트와의 간격은 padding과 margin 속성을 잘 활용해서 위치시킨다.
+
+#### 3.5.10 참고 링크
+
+* [CSS Box Model](https://www.w3schools.com/css/css_boxmodel.asp)
