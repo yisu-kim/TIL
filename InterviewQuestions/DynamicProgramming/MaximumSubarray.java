@@ -6,6 +6,8 @@
 /**
  * O(n) time complexity
  * O(1) space complexity
+ * 
+ * kadane's algorithm with modification
  */
 
 class Solution {
