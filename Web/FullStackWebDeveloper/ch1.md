@@ -1354,3 +1354,105 @@ block 엘리먼트의 크기는 기본적으로 부모 엘리먼트의 크기만
 #### 3.5.10 참고 링크
 
 * [CSS Box Model](https://www.w3schools.com/css/css_boxmodel.asp)
+
+### 3.6 float 기반 샘플 화면 레이아웃 구성
+
+float와 position을 중심으로 레이아웃을 구성해본다.
+
+float를 사용할 때 발생하는 문제는 다음 속성을 사용하여 해결할 수 있다.
+
+* clear:left, right, both
+
+  float 속성을 통해 태그를 띄운 이후 문서의 흐름을 제거하기 위해 쓰인다. 예를 들어 clear:left를 사용하면 float:left 설정을 인식하고 같은 line에 올라가지 않는다.
+
+* overflow:visible, hidden, scroll, auto
+
+  자식 엘리먼트가 부모 엘리먼트의 범위를 초과할 때 어떻게 처리할지를 결정할 때 사용한다. 자식 엘리먼트에 float 속성이 있으면 부모 엘리먼트에서 자식 엘리먼트를 인지하지 못하는데 overflow 속성을 사용하여 인식하게 할 수 있다.
+
+  * visible: 기본값이다. 오버플로가 잘리지 않고 상자 밖에 렌더링된다.
+  * hidden: 오버플로가 잘리고 나머지 내용은 보이지 않는다.
+  * scroll: 오버플로가 잘리지만 스크롤 막대가 추가되어 나머지 내용을 볼 수 있다.
+  * auto: 오버플로가 잘리는 경우 내용의 나머지 부분을 보려면 스크롤 막대를 추가해야 한다.
+
+```html
+<header>부스트코스는 정말 유익합니다.</header>
+<div id="wrap">
+   <nav class="left">
+      <ul>
+         <li>menu</li>
+         <li>home</li>
+         <li>name</li>
+      </ul>
+   </nav>
+   <div class="right">
+      <h2>
+         <span>반가워요!</span>
+         <div class="emoticon">:-)</div>
+      </h2>
+   <ul>
+      <li>crong</li>
+      <li>jk</li>
+      <li>honux</li>
+      <li>pobi</li>
+   </ul>
+   </div>
+   <div class="realright">
+      oh~ right
+   </div>
+</div>
+<footer>코드스쿼드(주)</footer>
+```
+
+```css
+li {
+   list-style:none;
+}
+
+header {
+   background-color : #eee;
+}
+
+#wrap {
+   overflow:auto;
+   margin:20px 0px;
+}
+
+.left, .right, .realright {
+   float:left;
+   height: 200px;
+}
+
+.left {
+   width:17%;
+   margin-right:3%;
+   background-color : #47c;
+}
+
+.right {
+   width : 60%;
+   text-align:center;
+   background-color : #47c;
+}
+
+.realright {
+   width: 17%;
+   margin-left:3%;
+   background-color : #67c;
+}
+
+.right > h2 {
+   position:relative;
+}
+
+.right .emoticon {
+   position:absolute;
+   top:0px;
+   right:5%;
+   color:#fff;
+}
+
+footer {
+   background-color : #eee;
+   clear:left;
+}
+```
