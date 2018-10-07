@@ -1456,3 +1456,20 @@ footer {
    clear:left;
 }
 ```
+
+### 3.7 디버깅-HTML-CSS
+
+크롬 개발자도구(`ctrl + shift + i`)를 활용하여 디버깅할 수 있다. 특히 Elements panel을 이해하는 것이 중요하다.
+
+#### 3.7.1 크롬 개발자도구
+
+* 인스펙터를 누르면 해당하는 HTML 엘리먼트의 정보를 쉽게 확인하고 선택할 수 있다.
+* Styles 탭에서 DOM 트리의 모든 요소를 검사하고 편집할 수 있다.
+* CSS Style을 inline 방식으로 빠르게 테스트할 수 있다.
+* 현재 엘리먼트의 값을 임시로 바꿀 수 있다.
+* Computed 탭에서 최종 결정된 CSS 값을 확인할 수 있다. 취소된 설정값도 확인 가능하다.
+* Source 패널에서는 로컬 변경이 적용된 페이지를 볼 수 있다.
+
+#### 3.7.2 참고 링크
+
+* [페이지와 스타일 검사 및 편집](https://developers.google.com/web/tools/chrome-devtools/inspect-styles/?hl=ko)
