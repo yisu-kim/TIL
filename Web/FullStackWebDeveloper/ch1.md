@@ -1473,3 +1473,17 @@ footer {
 #### 3.7.2 참고 링크
 
 * [페이지와 스타일 검사 및 편집](https://developers.google.com/web/tools/chrome-devtools/inspect-styles/?hl=ko)
+
+## 4 개발환경 설정 - BE
+
+### 4.1 JDK 다운받기 및 설치하기
+
+JAVA 언어로 작성된 프로그램을 실행하기 위해 JRE(Java SE Runtime Environment)가 필요하다.
+
+개발자는 JAVA 언어로 작성된 소스를 컴파일하고 관리하기 위해 JDK(Java SE Development Kit)가 필요하다. 컴파일한 결과 프로그램을 실행해야 하므로 JDK 안에는 JRE가 포함되어 있다.
+
+#### 4.1.1 Windows 용
+
+[오라클](http://www.oracle.com/technetwork/java/index.html)에서 다운받을 수 있다. 교육 과정에서는 JDK 8로 실습을 진행한다.
+
+라이센스에 동의한 후 32비트 또는 64비트 운영체제에 맞는 파일을 다운받아 설치한다. 설치 과정에서 환경변수 설정을 위해 JDK 설치 경로를 기억해 둔다.
