@@ -1487,3 +1487,46 @@ JAVA 언어로 작성된 프로그램을 실행하기 위해 JRE(Java SE Runtime
 [오라클](http://www.oracle.com/technetwork/java/index.html)에서 다운받을 수 있다. 교육 과정에서는 JDK 8로 실습을 진행한다.
 
 라이센스에 동의한 후 32비트 또는 64비트 운영체제에 맞는 파일을 다운받아 설치한다. 설치 과정에서 환경변수 설정을 위해 JDK 설치 경로를 기억해 둔다.
+
+### 4.2 환경설정하기
+
+JDK를 설치한 후에 콘솔(console) 환경에서 실행될 수 있도록 시스템 환경 설정이 필요하다.
+
+#### 4.2.1 Windows 환경 설정
+
+시스템 환경 변수 3가지를 다음과 같이 설정한다.
+
+* JAVA_HOME: C:\Program Files\Java\jdk1.8.0_151 (JAVA가 설치된 경로)
+* CLASSPATH: %JAVA_HOME%\lib\tools.jar (JAVA 클래스가 있는 경로)
+* PATH: %JAVA_HOME%\bin (JAVA 실행파일이 있는 경로 추가)
+
+콘솔 창에서 다음 명령을 입력하여 버전을 확인한다.
+
+```shell
+java -version
+javac -version
+```
+
+#### 4.2.1 Hello world
+
+Hello.java 라는 파일을 만들고 아래 내용을 작성한다.
+
+```java
+public class Hello {
+  public static void main(String args[]) {
+    System.out.println("Hello world");
+  }
+}
+```
+
+콘솔에서 해당 디렉토리로 이동한 다음 다음 명령으로 소스 파일을 컴파일 한다. 컴파일이 완료되면 Hello.class 파일이 생성된다.
+
+```shell
+javac Hello.java
+```
+
+콘솔에서 생성된 class 파일을 실행하여 출력을 확인한다.
+
+```shell
+java Hello
+```
