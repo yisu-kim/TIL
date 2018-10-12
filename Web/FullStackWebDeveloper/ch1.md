@@ -1530,3 +1530,35 @@ javac Hello.java
 ```shell
 java Hello
 ```
+
+### 4.3 이클립스 다운받기 및 설치하고 인코딩 설정하기
+
+#### 4.3.1 이클립스 다운받기 및 설치하기
+
+이클립스는 윈도우, 맥, 리눅스 등 다양한 운영체제에서 동작하며, JAVA를 비롯한 다양한 프로그래밍 언어로 개발할 수 있는 통합 개발 환경(Integrated Development Environment, IDE)을 제공한다.
+
+다시 말해서 코딩, 디버그, 컴파일, 배포 등 모든 작업을 하나의 프로그램 안에서 처리할 수 있는 환경을 제공하는 소프트웨어이다. 또한 플러그인 구조로 되어 있어 쉽게 기능을 추가할 수 있다.
+
+[이클립스 사이트](https://www.eclipse.org)에서 "Eclipse IDE for Java EE Developers"를 다운 받아야 한다.
+
+다운 받은 후 eclipse.exe 파일을 실행하여 사용할 수 있다. 실행 시 workspace 경로를 묻는 창이 뜨는데 이 경로에 이클립스로 관리하는 모든 프로젝트가 저장된다.
+
+#### 4.3.2 인코딩 설정하기
+
+프로젝트 내에서 JAVA, HTML, xml 등 다양한 파일을 저장할 때 인코딩 방법이 다르면 글자가 깨질 수 있다. 이를 방지하기 위해 다음과 같이 인코딩을 설정한다.
+
+Window > Preferences 메뉴를 클릭한다.
+
+JAVA 파일 인코딩 설정을 위해 General > Workspace 메뉴에서 Text file encoding을 Other: UTF-8로 설정한다. Apply 버튼을 눌러 설정을 적용한다.
+
+CSS 파일 인코딩 설정을 위해 Web > CSS Files 메뉴에서 Encoding: Korean, EUC-KR로 설정한다. Apply 버튼을 눌러 설정을 적용한다.
+
+HTML 파일 인코딩 설정을 위해 Web > HTML Files 메뉴에서 Encoding: Korean, EUC-KR로 설정한다. Apply 버튼을 눌러 설정을 적용한다.
+
+JSP 파일 인코딩 설정을 위해 Web > JSP Files 메뉴에서 Encoding: Korean, EUC-KR로 설정한다. Apply 버튼을 눌러 설정을 적용한다.
+
+#### 4.3.3 참고 링크
+
+* [Eclipse](https://www.eclipse.org)
+* [위키피디아 Eclipse (software)](https://en.wikipedia.org/wiki/Eclipse_(software))
+* [[번역] 위키피디아 Eclipse (software)](https://ko.wikipedia.org/wiki/%EC%9D%B4%ED%81%B4%EB%A6%BD%EC%8A%A4_(%EC%86%8C%ED%94%84%ED%8A%B8%EC%9B%A8%EC%96%B4))
