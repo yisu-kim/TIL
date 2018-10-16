@@ -15,6 +15,7 @@ var app = http.createServer(function (request, response) {
     }
     response.writeHead(200);
     fs.readFile(`data/${title}`, 'utf8', function (err, description) {
+        if (err) throw err;
         var template = `
         <!doctype html>
         <html>
@@ -30,7 +31,7 @@ var app = http.createServer(function (request, response) {
                 <li><a href="/?id=JavaScript">JavaScript</a></li>
             </ol>
             <h2>${title}</h2>
-            <p style="margin-top:45px;">${description}</p>
+            <p>${description}</p>
         </body>
         </html>
         `;
