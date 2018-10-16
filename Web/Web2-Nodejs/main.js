@@ -6,6 +6,9 @@ var app = http.createServer(function (request, response) {
   var queryData = url.parse(_url, true).query;
   var pathname = url.parse(_url, true).pathname;
   var title = queryData.id;
+  if (title === undefined) {
+    title = 'Welcome';
+  }
   if (pathname === '/') {
     fs.readFile(`data/${title}`, 'utf8', function (err, description) {
       var template = `
