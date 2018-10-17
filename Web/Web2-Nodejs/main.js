@@ -24,6 +24,7 @@ function templateHTML(title, list, body) {
   <body>
       <h1><a href="/">WEB</a></h1>
       ${list}
+      <a href="/create">create</a>
       ${body}
   </body>
   </html>
@@ -35,10 +36,10 @@ var app = http.createServer(function (request, response) {
   var queryData = url.parse(_url, true).query;
   var pathname = url.parse(_url, true).pathname;
   var title = queryData.id;
-  if (title === undefined) {
-    title = 'Welcome';
-  }
   if (pathname === '/') {
+    if (title === undefined) {
+      title = 'Welcome';
+    }
     fs.readdir('./data', function (err, filelist) {
       var list = templateList(filelist);
       fs.readFile(`./data/${title}`, 'utf8', function (err, description) {
@@ -54,6 +55,27 @@ var app = http.createServer(function (request, response) {
         var body = `
           <h2>${title}</h2>
           ${description}`;
+        var template = templateHTML(title, list, body);
+        response.writeHead(200);
+        response.end(template);
+      })
+    })
+  } else if (pathname === '/create') {
+    title = 'create'
+    fs.readdir('./data', function (err, filelist) {
+      var list = templateList(filelist);
+      fs.readFile(`./data/${title}`, 'utf8', function (err, description) {
+        var body = `
+        <form action="http://localhost:3000/process_create" method="post">
+          <p><input type="text" name="title" placeholder="title"></p>
+          <p>
+            <textarea name="description" placeholder="description"></textarea>
+          </p>
+          <p>
+            <input type="submit">
+          </p>
+        </form>
+        `;
         var template = templateHTML(title, list, body);
         response.writeHead(200);
         response.end(template);
