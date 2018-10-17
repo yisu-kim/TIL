@@ -3,33 +3,34 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 
-function templateList(filelist) {
-  var list = '<ol>';
-  var i = 0;
-  while (i < filelist.length) {
-    list = list + `<li><a href='/?id=${filelist[i]}'>${filelist[i]}</a></li>`;
-    i = i + 1;
+var template = {
+  list: function (filelist) {
+    var list = '<ol>';
+    var i = 0;
+    while (i < filelist.length) {
+      list = list + `<li><a href='/?id=${filelist[i]}'>${filelist[i]}</a></li>`;
+      i = i + 1;
+    }
+    list = list + '</ol>';
+    return list;
+  },
+  HTML: function (title, list, body, control = '') {
+    return `
+    <!doctype html>
+    <html>
+    <head>
+        <title>WEB1 - ${title}</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1><a href="/">WEB</a></h1>
+        ${list}
+        ${control}
+        <p>${body}</p>
+    </body>
+    </html>
+    `;
   }
-  list = list + '</ol>';
-  return list;
-}
-
-function templateHTML(title, list, body, control = '') {
-  return `
-  <!doctype html>
-  <html>
-  <head>
-      <title>WEB1 - ${title}</title>
-      <meta charset="utf-8">
-  </head>
-  <body>
-      <h1><a href="/">WEB</a></h1>
-      ${list}
-      ${control}
-      <p>${body}</p>
-  </body>
-  </html>
-  `;
 }
 
 var app = http.createServer(function (request, response) {
@@ -42,7 +43,7 @@ var app = http.createServer(function (request, response) {
       title = 'Welcome';
     }
     fs.readdir('./data', function (err, filelist) {
-      var list = templateList(filelist);
+      var list = template.list(filelist);
       fs.readFile(`./data/${title}`, 'utf8', function (err, description) {
         if (description === undefined) {
           description = `The World Wide Web (abbreviated WWW or the Web) is an information space where documents and other web resources are identified by Uniform Resource Locators (URLs), interlinked by hypertext links, and can be accessed via the Internet.[1] English scientist Tim Berners-Lee invented the World Wide Web in 1989. He wrote the first web browser computer program in 1990 while employed at CERN in Switzerland.[2][3] The Web browser was released outside of CERN in 1991, first to other research institutions starting in January 1991 and to the general public on the Internet in August 1991.`
@@ -59,15 +60,15 @@ var app = http.createServer(function (request, response) {
                       <p><input type="submit" value="delete"></p>
                       </form>`;
         }
-        var template = templateHTML(title, list, body, control);
+        var html = template.HTML(title, list, body, control);
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
     });
   } else if (pathname === '/create') {
     title = 'create'
     fs.readdir('./data', function (err, filelist) {
-      var list = templateList(filelist);
+      var list = template.list(filelist);
       var body = `
         <form action="/create_process" method="post">
           <p><input type="text" name="title" placeholder="title"></p>
@@ -79,9 +80,9 @@ var app = http.createServer(function (request, response) {
           </p>
         </form>
         `;
-      var template = templateHTML(title, list, body);
+      var html = template.HTML(title, list, body);
       response.writeHead(200);
-      response.end(template);
+      response.end(html);
     });
   } else if (pathname === '/create_process') {
     var body = '';
@@ -100,7 +101,7 @@ var app = http.createServer(function (request, response) {
   } else if (pathname === '/update') {
     fs.readdir('./data', function (err, filelist) {
       fs.readFile(`./data/${title}`, 'utf8', function (err, description) {
-        var list = templateList(filelist);
+        var list = template.list(filelist);
         var body = `
         <form action="/update_process" method="post">
           <p><input type="hidden" name="id" value=${title}></p>
@@ -113,9 +114,9 @@ var app = http.createServer(function (request, response) {
           </p>
         </form>
         `;
-        var template = templateHTML(title, list, body);
+        var html = template.HTML(title, list, body);
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
     });
   } else if (pathname === '/update_process') {
@@ -143,8 +144,8 @@ var app = http.createServer(function (request, response) {
     request.on('end', function () {
       var post = qs.parse(body);
       var id = post.id;
-      fs.unlink(`data/${id}`, function(err) {
-        response.writeHead(302, { Location: `/` });
+      fs.unlink(`data/${id}`, function (err) {
+        response.writeHead(302, { Location: '/' });
         response.end();
       });
     });
