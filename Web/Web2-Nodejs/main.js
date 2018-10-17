@@ -14,7 +14,7 @@ function templateList(filelist) {
   return list;
 }
 
-function templateHTML(title, list, body) {
+function templateHTML(title, list, body, control='') {
   return `
   <!doctype html>
   <html>
@@ -25,7 +25,7 @@ function templateHTML(title, list, body) {
   <body>
       <h1><a href="/">WEB</a></h1>
       ${list}
-      <a href="/create">create</a>
+      ${control}
       ${body}
   </body>
   </html>
@@ -56,7 +56,11 @@ var app = http.createServer(function (request, response) {
         var body = `
           <h2>${title}</h2>
           ${description}`;
-        var template = templateHTML(title, list, body);
+        var control = '<a href="/create">create</a>';
+        if (title != 'Welcome') {
+          control = control + ` <a href="/update?id=${title}">update</a>`;
+        }
+        var template = templateHTML(title, list, body, control);
         response.writeHead(200);
         response.end(template);
       });
