@@ -36,17 +36,19 @@ var app = http.createServer(function (request, response) {
         if (error) {
           throw error;
         }
-        db.query('SELECT * FROM topic WHERE id=?', [queryData.id], function (error, topic) {
+        db.query('SELECT * FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [queryData.id], function (error, topic) {
           if (error) {
             throw error;
           };
           var id = topic[0].id;
           var title = topic[0].title;
           var description = topic[0].description;
+          var author = topic[0].name;
           var list = template.list(topics);
           var body = `
               <h2>${title}</h2>
-              ${description}`;
+              ${description}
+              <p>by ${author}</p>`;
           var control = `
             <a href="/create">create</a>
             <a href="/update?id=${id}">update</a>
