@@ -134,8 +134,8 @@ var app = http.createServer(function (request, response) {
       var id = post.id;
       var title = post.title;
       var description = post.description;
-      db.query(`UPDATE topic SET title=?, description=? WHERE id=?`,
-        [title, description, id], function (error) {
+      db.query(`UPDATE topic SET title=?, description=?, author_id=? WHERE id=?`,
+        [title, description, 1, id], function (error) {
           if (error) {
             throw error;
           }
