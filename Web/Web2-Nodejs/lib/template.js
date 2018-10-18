@@ -18,6 +18,7 @@ module.exports = {
       </head>
       <body>
           <h1><a href="/">WEB</a></h1>
+          <a href="/author">author</a>
           ${list}
           ${control}
           <p>${body}</p>
@@ -37,5 +38,20 @@ module.exports = {
         }
         authorSelect += '</select>'
         return authorSelect;
+    }, authorTable: function (authors) {
+        var authorTable = '<table>';
+        var i = 0;
+        while (i < authors.length) {
+            authorTable += `
+          <tr>
+            <td>${authors[i].name}</td>
+            <td>${authors[i].profile}</td>
+            <td>udpate</td>
+            <td>delete</td>
+          </tr>`
+            i++;
+        };
+        authorTable += '</table>';
+        return authorTable;
     }
 }
