@@ -24,11 +24,15 @@ module.exports = {
       </body>
       </html>
       `;
-    }, authorSelect: function (authors) {
+    }, authorSelect: function (authors, author_id) {
         var i = 0;
         var authorSelect = '<select name="author_id">';
         while (i < authors.length) {
-            authorSelect += `<option value='${authors[i].id}'>${authors[i].name}</option>`;
+            var selected = '';
+            if (authors[i].id === author_id) {
+                selected = 'selected';
+            }
+            authorSelect += `<option value='${authors[i].id}' ${selected}>${authors[i].name}</option>`;
             i++;
         }
         authorSelect += '</select>'
