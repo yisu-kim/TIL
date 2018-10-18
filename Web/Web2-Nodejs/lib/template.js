@@ -8,8 +8,7 @@ module.exports = {
         }
         list = list + '</ul>';
         return list;
-    },
-    HTML: function (title, list, body, control = '') {
+    }, HTML: function (title, list, body, control = '') {
         return `
       <!doctype html>
       <html>
@@ -25,5 +24,14 @@ module.exports = {
       </body>
       </html>
       `;
+    }, authorSelect: function (authors) {
+        var i = 0;
+        var authorSelect = '<select name="author_id">';
+        while (i < authors.length) {
+            authorSelect += `<option value='${authors[i].id}'>${authors[i].name}</option>`;
+            i++;
+        }
+        authorSelect += '</select>'
+        return authorSelect;
     }
 }

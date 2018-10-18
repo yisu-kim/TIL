@@ -36,9 +36,9 @@ var app = http.createServer(function (request, response) {
         if (error) {
           throw error;
         }
-        db.query('SELECT * FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [queryData.id], function (error, topic) {
-          if (error) {
-            throw error;
+        db.query('SELECT * FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [queryData.id], function (error2, topic) {
+          if (error2) {
+            throw error2;
           };
           var id = topic[0].id;
           var title = topic[0].title;
@@ -67,17 +67,20 @@ var app = http.createServer(function (request, response) {
       if (error) {
         throw error;
       }
-      var title = 'Create';
-      var list = template.list(topics);
-      var body = `
+      db.query('SELECT * FROM author', function (error, authors) {
+        var title = 'Create';
+        var list = template.list(topics);
+        var body = `
         <form action="/create_process" method="post">
           <p><input type="text" name="title" placeholder="title"></p>
           <p><textarea name="description" placeholder="description"></textarea></p>
+          <p>${template.authorSelect(authors)}</p>
           <p><input type="submit"></p>
         </form>`;
-      var html = template.HTML(title, list, body);
-      response.writeHead(200);
-      response.end(html);
+        var html = template.HTML(title, list, body);
+        response.writeHead(200);
+        response.end(html);
+      });
     });
   } else if (pathname === '/create_process') {
     var body = '';
@@ -88,9 +91,10 @@ var app = http.createServer(function (request, response) {
       var post = qs.parse(body);
       var title = post.title;
       var description = post.description;
+      var author_id = post.author_id;
       db.query(`INSERT INTO topic (title, description, created, author_id)
         VALUES (?, ?, NOW(), ?)`,
-        [title, description, 1],
+        [title, description, author_id],
         function (error, result) {
           if (error) {
             throw error;
@@ -104,9 +108,9 @@ var app = http.createServer(function (request, response) {
       if (error) {
         throw error;
       }
-      db.query('SELECT * FROM topic WHERE id=?', [queryData.id], function (error, topic) {
-        if (error) {
-          throw error;
+      db.query('SELECT * FROM topic WHERE id=?', [queryData.id], function (error2, topic) {
+        if (error2) {
+          throw error2;
         };
         var id = topic[0].id;
         var title = topic[0].title;
