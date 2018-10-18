@@ -40,6 +40,7 @@ var app = http.createServer(function (request, response) {
           if (error) {
             throw error;
           };
+          var id = topic[0].id;
           var title = topic[0].title;
           var description = topic[0].description;
           var list = template.list(topics);
@@ -48,7 +49,7 @@ var app = http.createServer(function (request, response) {
               ${description}`;
           var control = `
             <a href="/create">create</a>
-            <a href="/update?id=${title}">update</a>
+            <a href="/update?id=${id}">update</a>
             <form action = "/delete_process" method = "post" >
               <p><input type="hidden" name="id" value=${title}></p>
               <p><input type="submit" value="delete"></p>
@@ -97,22 +98,28 @@ var app = http.createServer(function (request, response) {
         });
     });
   } else if (pathname === '/update') {
-    fs.readdir('./data', function (err, filelist) {
-      fs.readFile(`./data/${filteredTitle}`, 'utf8', function (err, description) {
-        var list = template.list(filelist);
+    db.query('SELECT * FROM topic', function (error, topics) {
+      if (error) {
+        throw error;
+      }
+      db.query('SELECT * FROM topic WHERE id=?', [queryData.id], function (error, topic) {
+        if (error) {
+          throw error;
+        };
+        var id = topic[0].id;
+        var title = topic[0].title;
+        var description = topic[0].description;
+        var list = template.list(topics);
         var body = `
-        <form action="/update_process" method="post">
-          <p><input type="hidden" name="id" value=${title}></p>
-          <p><input type="text" name="title" placeholder="title" value=${title}></p>
-          <p>
-            <textarea name="description" placeholder="description">${description}</textarea>
-          </p>
-          <p>
-            <input type="submit">
-          </p>
-        </form>
+          <form action="/update_process" method="post">
+            <p><input type="hidden" name="id" value=${id}></p>
+            <p><input type="text" name="title" placeholder="title" value=${title}></p>
+            <p><textarea name="description" placeholder="description">${description}</textarea></p>
+            <p><input type="submit"></p>
+          </form>
         `;
-        var html = template.HTML(title, list, body);
+        var control = '<a href="/create">create</a>';
+        var html = template.HTML(title, list, body, control);
         response.writeHead(200);
         response.end(html);
       });
@@ -125,16 +132,16 @@ var app = http.createServer(function (request, response) {
     request.on('end', function () {
       var post = qs.parse(body);
       var id = post.id;
-      var filteredId = path.parse(id).base;
       var title = post.title;
-      var filteredTitle = path.parse(title).base;
       var description = post.description;
-      fs.rename(`data/${filteredId}`, `data/${filteredTitle}`, function (err) {
-        fs.writeFile(`data/${filteredTitle}`, description, 'utf8', function (err) {
-          response.writeHead(302, { Location: `/?id=${filteredTitle}` });
+      db.query(`UPDATE topic SET title=?, description=? WHERE id=?`,
+        [title, description, id], function (error) {
+          if (error) {
+            throw error;
+          }
+          response.writeHead(302, { Location: `/?id=${id}` });
           response.end();
         });
-      });
     });
   } else if (pathname === '/delete_process') {
     var body = '';
