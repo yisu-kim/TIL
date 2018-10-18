@@ -3,7 +3,7 @@ module.exports = {
         var list = '<ol>';
         var i = 0;
         while (i < topics.length) {
-            list = list + `<li><a href='/?id=${topics[i].title}'>${topics[i].title}</a></li>`;
+            list = list + `<li><a href='/?id=${topics[i].id}'>${topics[i].title}</a></li>`;
             i = i + 1;
         }
         list = list + '</ol>';
