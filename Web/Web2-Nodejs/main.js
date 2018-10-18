@@ -51,7 +51,7 @@ var app = http.createServer(function (request, response) {
             <a href="/create">create</a>
             <a href="/update?id=${id}">update</a>
             <form action = "/delete_process" method = "post" >
-              <p><input type="hidden" name="id" value=${title}></p>
+              <p><input type="hidden" name="id" value=${id}></p>
               <p><input type="submit" value="delete"></p>
             </form>`;
           var html = template.HTML(title, list, body, control);
@@ -138,7 +138,7 @@ var app = http.createServer(function (request, response) {
         [title, description, 1, id], function (error) {
           if (error) {
             throw error;
-          }
+          };
           response.writeHead(302, { Location: `/?id=${id}` });
           response.end();
         });
@@ -151,8 +151,10 @@ var app = http.createServer(function (request, response) {
     request.on('end', function () {
       var post = qs.parse(body);
       var id = post.id;
-      var filteredId = path.parse(id).base;
-      fs.unlink(`data/${filteredId}`, function (err) {
+      db.query(`DELETE FROM topic WHERE id=?`, [id], function (error) {
+        if (error) {
+          throw error;
+        };
         response.writeHead(302, { Location: '/' });
         response.end();
       });

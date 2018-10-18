@@ -1,12 +1,12 @@
 module.exports = {
     list: function (topics) {
-        var list = '<ol>';
+        var list = '<ul>';
         var i = 0;
         while (i < topics.length) {
             list = list + `<li><a href='/?id=${topics[i].id}'>${topics[i].title}</a></li>`;
             i = i + 1;
         }
-        list = list + '</ol>';
+        list = list + '</ul>';
         return list;
     },
     HTML: function (title, list, body, control = '') {
