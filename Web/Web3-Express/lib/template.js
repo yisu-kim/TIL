@@ -32,10 +32,11 @@ module.exports = {
     var authorSelect = '<select name="author_id">';
     while (i < authors.length) {
       var selected = '';
-      if (authors[i].id === author_id) {
-        selected = 'selected';
+      console.log(authors[i].id, author_id);
+      if (authors[i].id == author_id) {
+        selected = ' selected';
       }
-      authorSelect += `<option value='${authors[i].id}' ${selected}>${sanitizeHtml(authors[i].name)}</option>`;
+      authorSelect += `<option value='${authors[i].id}'${selected}>${sanitizeHtml(authors[i].name)}</option>`;
       i++;
     }
     authorSelect += '</select>'
