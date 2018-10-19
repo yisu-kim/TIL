@@ -3,9 +3,12 @@ const app = express()
 const port = 3000
 const topic = require('./lib/topic')
 
-app.get('/', (req, res) => (topic.home(req, res)))
-
+app.get('/', (req, res) => topic.home(req, res))
 app.get('/page/:pageId', (req, res) => topic.page(req, res))
+app.get('/create', (req, res) => topic.create(req, res))
+app.post('/create', (req, res) => topic.create_process(req, res))
+app.get('/update/:pageId', (req, res) => topic.update(req, res))
+app.post('/update', (req, res) => topic.update_process(req, res))
 
 app.listen(port, () => console.log('Example app listening on port ${port}!'))
 

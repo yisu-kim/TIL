@@ -1,6 +1,5 @@
 var template = require('./template');
 var db = require('./db');
-var url = require('url');
 var qs = require('querystring');
 var sanitizeHtml = require('sanitize-html');
 
@@ -41,7 +40,7 @@ exports.page = function (request, response) {
               <p>by ${author}</p>`;
       var control = `
         <a href="/create">create</a>
-        <a href="/update?id=${id}">update</a>
+        <a href="/update/${id}">update</a>
         <form action = "/delete_process" method = "post" >
           <p><input type="hidden" name="id" value=${id}></p>
           <p><input type="submit" value="delete"></p>
@@ -64,15 +63,14 @@ exports.create = function (request, response) {
       var title = 'Create';
       var list = template.list(topics);
       var body = `
-        <form action="/create_process" method="post">
+        <form action="/create" method="post">
             <p><input type="text" name="title" placeholder="title"></p>
             <p><textarea name="description" placeholder="description"></textarea></p>
             <p>${template.authorSelect(authors)}</p>
             <p><input type="submit"></p>
         </form>`;
       var html = template.HTML(title, list, body);
-      response.writeHead(200);
-      response.end(html);
+      response.send(html);
     });
   });
 }
@@ -93,20 +91,17 @@ exports.create_process = function (request, response) {
         if (error) {
           throw error;
         }
-        response.writeHead(302, { Location: `/?id=${result.insertId}` });
-        response.end();
+        response.redirect(`/page/${result.insertId}`);
       });
   });
 }
 
 exports.update = function (request, response) {
-  var _url = request.url;
-  var queryData = url.parse(_url, true).query;
   db.query('SELECT * FROM topic', function (error, topics) {
     if (error) {
       throw error;
     }
-    db.query('SELECT * FROM topic WHERE id=?', [queryData.id], function (error2, topic) {
+    db.query('SELECT * FROM topic WHERE id=?', [request.params.pageId], function (error2, topic) {
       if (error2) {
         throw error2;
       };
@@ -120,7 +115,7 @@ exports.update = function (request, response) {
         var author_id = sanitizeHtml(topic[0].author_id);
         var list = template.list(topics);
         var body = `
-          <form action="/update_process" method="post">
+          <form action="/update" method="post">
             <p><input type="hidden" name="id" value=${id}></p>
             <p><input type="text" name="title" placeholder="title" value=${title}></p>
             <p><textarea name="description" placeholder="description">${description}</textarea></p>
@@ -130,8 +125,7 @@ exports.update = function (request, response) {
           `;
         var control = '<a href="/create">create</a>';
         var html = template.HTML(title, list, body, control);
-        response.writeHead(200);
-        response.end(html);
+        response.send(html);
       });
     });
   });
@@ -153,8 +147,7 @@ exports.update_process = function (request, response) {
         if (error) {
           throw error;
         };
-        response.writeHead(302, { Location: `/?id=${id}` });
-        response.end();
+        response.redirect(`/page/${id}`);
       });
   });
 }
