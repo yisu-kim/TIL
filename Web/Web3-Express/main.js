@@ -4,8 +4,10 @@ const port = 3000
 const bodyParser = require('body-parser')
 const topicRouter = require('./routes/topic')
 const indexRouter = require('./routes/index')
-const db = require('./lib/db');
+const db = require('./lib/db')
+const helmet = require('helmet')
 
+app.use(helmet())
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.get('*', (req, res, next) =>  {
