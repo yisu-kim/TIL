@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const topic = require('./lib/topic')
 
 app.use(bodyParser.urlencoded({ extended: false }))
+app.get('*', (req, res, next) => topic.list(req, res, next));
 
 app.get('/', (req, res) => topic.home(req, res))
 app.get('/page/:pageId', (req, res) => topic.page(req, res))
