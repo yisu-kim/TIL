@@ -30,7 +30,6 @@ exports.page = function (request, response, next) {
     if (topic.length === 0) {
       next(error);
     } else {
-      console.log(topic);
       var id = topic[0].id;
       var title = sanitizeHtml(topic[0].title);
       var description = sanitizeHtml(topic[0].description);
