@@ -1,20 +1,26 @@
 const express = require('express')
 const app = express()
 const port = 3000
-const bodyParser = require('body-parser');
-const topic = require('./lib/topic')
+const bodyParser = require('body-parser')
+const topicRouter = require('./routes/topic')
+const indexRouter = require('./routes/index')
+const db = require('./lib/db');
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
-app.get('*', (req, res, next) => topic.list(req, res, next));
+app.get('*', (req, res, next) =>  {
+  db.query('SELECT * FROM topic', function (err, topics) {
+    if (err) {
+      next(err);
+    } else {
+      req.list = topics;
+      next();
+    }
+  })
+})
 
-app.get('/', (req, res) => topic.home(req, res))
-app.get('/page/:pageId', (req, res, next) => topic.page(req, res, next))
-app.get('/create', (req, res) => topic.create(req, res))
-app.post('/create', (req, res) => topic.create_process(req, res))
-app.get('/update/:pageId', (req, res) => topic.update(req, res))
-app.post('/update', (req, res) => topic.update_process(req, res))
-app.post('/delete', (req, res) => topic.delete_process(req, res))
+app.use('/', indexRouter)
+app.use('/topic', topicRouter)
 
 app.use((req, res, next) => res.status(404).send("Sorry can't find that!"))
 app.use((err, req, res, next) => {
