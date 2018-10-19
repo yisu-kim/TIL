@@ -15,4 +15,4 @@ app.get('/update/:pageId', (req, res) => topic.update(req, res))
 app.post('/update', (req, res) => topic.update_process(req, res))
 app.post('/delete', (req, res) => topic.delete_process(req, res))
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port)
