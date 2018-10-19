@@ -25,29 +25,31 @@ exports.home = function (request, response) {
   response.send(html);
 };
 
-exports.page = function (request, response) {
-  db.query('SELECT author.*, topic.* FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [request.params.pageId], function (error2, topic) {
-    if (error2) {
-      throw error2;
-    };
-    var id = topic[0].id;
-    var title = sanitizeHtml(topic[0].title);
-    var description = sanitizeHtml(topic[0].description);
-    var author = sanitizeHtml(topic[0].name);
-    var list = template.list(request.list);
-    var body = `
-      <h2>${title}</h2>
-      ${description}
-      <p>by ${author}</p>`;
-    var control = `
-      <a href="/create">create</a>
-      <a href="/update/${id}">update</a>
-      <form action = "/delete" method = "post" >
-        <p><input type="hidden" name="id" value=${id}></p>
-        <p><input type="submit" value="delete"></p>
-      </form>`;
-    var html = template.HTML(title, list, body, control);
-    response.send(html);
+exports.page = function (request, response, next) {
+  db.query('SELECT author.*, topic.* FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [request.params.pageId], function (error, topic) {
+    if (topic.length === 0) {
+      next(error);
+    } else {
+      console.log(topic);
+      var id = topic[0].id;
+      var title = sanitizeHtml(topic[0].title);
+      var description = sanitizeHtml(topic[0].description);
+      var author = sanitizeHtml(topic[0].name);
+      var list = template.list(request.list);
+      var body = `
+        <h2>${title}</h2>
+        ${description}
+        <p>by ${author}</p>`;
+      var control = `
+        <a href="/create">create</a>
+        <a href="/update/${id}">update</a>
+        <form action = "/delete" method = "post" >
+          <p><input type="hidden" name="id" value=${id}></p>
+          <p><input type="submit" value="delete"></p>
+        </form>`;
+      var html = template.HTML(title, list, body, control);
+      response.send(html);
+    }
   });
 };
 
@@ -60,8 +62,8 @@ exports.create = function (request, response) {
     var list = template.list(request.list);
     var body = `
       <form action="/create" method="post">
-          <p><input type="text" name="title" placeholder="title"></p>
-          <p><textarea name="description" placeholder="description"></textarea></p>
+      <p><input type="text" name="title" placeholder="title"></p>
+      <p><textarea name="description" placeholder="description"></textarea></p>
           <p>${template.authorSelect(authors)}</p>
           <p><input type="submit"></p>
       </form>`;
@@ -76,7 +78,8 @@ exports.create_process = function (request, response) {
   var title = post.title;
   var description = post.description;
   var author_id = post.author_id;
-  db.query(`INSERT INTO topic (title, description, created, author_id) VALUES (?, ?, NOW(), ?)`,
+  db.q
+  uery(`INSERT INTO topic (title, description, created, author_id) VALUES (?, ?, NOW(), ?)`,
     [title, description, author_id],
     function (error, result) {
       if (error) {
@@ -103,10 +106,10 @@ exports.update = function (request, response) {
       var body = `
         <form action="/update" method="post">
           <p><input type="hidden" name="id" value=${id}></p>
-          <p><input type="text" name="title" placeholder="title" value=${title}></p>
-          <p><textarea name="description" placeholder="description">${description}</textarea></p>
-          <p>${template.authorSelect(authors, author_id)}</p>
-          <p><input type="submit"></p>
+      <p><input type="text" name="title" placeholder="title" value=${title}></p>
+      <p><textarea name="description" placeholder="description">${description}</textarea></p>
+      <p>${template.authorSelect(authors, author_id)}</p>
+      <p><input type="submit"></p>
         </form>`;
       var control = '<a href="/create">create</a>';
       var html = template.HTML(title, list, body, control);
@@ -120,7 +123,8 @@ exports.update_process = function (request, response) {
   var id = post.id;
   var title = post.title;
   var description = post.description;
-  var author_id = post.author_id;
+  var
+    author_id = post.author_id;
   db.query(`UPDATE topic SET title=?, description=?, author_id=? WHERE id=?`,
     [title, description, author_id, id], function (error) {
       if (error) {
