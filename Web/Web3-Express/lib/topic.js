@@ -17,8 +17,7 @@ exports.home = function (request, response) {
       <h2>${title}</h2>
       ${description}`;
     var html = template.HTML(title, list, body, control);
-    response.writeHead(200);
-    response.end(html);
+    response.send(html);
   });
 };
 
