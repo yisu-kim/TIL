@@ -19,7 +19,8 @@ exports.home = function (request, response) {
   var control = '<a href="/create">create</a>';
   var body = `
     <h2>${title}</h2>
-    ${description}`;
+    ${description}
+    <image src=/images/hello.jpg style="width:300px; display:block; margin-top:10px;">`;
   var html = template.HTML(title, list, body, control);
   response.send(html);
 };

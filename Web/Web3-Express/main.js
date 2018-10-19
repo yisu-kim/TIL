@@ -4,6 +4,7 @@ const port = 3000
 const bodyParser = require('body-parser');
 const topic = require('./lib/topic')
 
+app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.get('*', (req, res, next) => topic.list(req, res, next));
 
