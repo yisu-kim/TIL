@@ -2,6 +2,7 @@ var template = require('./template');
 var db = require('./db');
 var url = require('url');
 var qs = require('querystring');
+var sanitizeHtml = require('sanitize-html');
 
 exports.home = function (request, response) {
   db.query('SELECT * FROM topic', function (error, topics) {
@@ -33,9 +34,9 @@ exports.page = function (request, response) {
         throw error2;
       };
       var id = topic[0].id;
-      var title = topic[0].title;
-      var description = topic[0].description;
-      var author = topic[0].name;
+      var title = sanitizeHtml(topic[0].title);
+      var description = sanitizeHtml(topic[0].description);
+      var author = sanitizeHtml(topic[0].name);
       var list = template.list(topics);
       var body = `
               <h2>${title}</h2>
@@ -118,9 +119,9 @@ exports.update = function (request, response) {
           throw error3;
         };
         var id = topic[0].id;
-        var title = topic[0].title;
-        var description = topic[0].description;
-        var author_id = topic[0].author_id;
+        var title = sanitizeHtml(topic[0].title);
+        var description = sanitizeHtml(topic[0].description);
+        var author_id = sanitizeHtml(topic[0].author_id);
         var list = template.list(topics);
         var body = `
           <form action="/update_process" method="post">

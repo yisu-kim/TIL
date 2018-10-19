@@ -2,6 +2,7 @@ var template = require('./template');
 var db = require('./db');
 var qs = require('querystring');
 var url = require('url');
+var sanitizeHtml = require('sanitize-html');
 
 exports.home = function (request, response) {
   db.query('SELECT * FROM topic', function (error, topics) {
@@ -103,8 +104,8 @@ exports.update = function (request, response) {
         var title = 'Update author';
         var list = template.list(topics);
         var id = author[0].id;
-        var name = author[0].name;
-        var profile = author[0].profile;
+        var name = sanitizeHtml(author[0].name);
+        var profile = sanitizeHtml(author[0].profile);
         var body = `
           ${template.authorTable(authors)}
           <style>
@@ -158,7 +159,7 @@ exports.delete_process = function (request, response) {
   request.on('end', function () {
     var post = qs.parse(body);
     var id = post.id;
-    db.query(`DELETE FROM topic WHERE id=?`, [id], function (error) {
+    db.query(`DELETE FROM topic WHERE author_id=?`, [id], function (error) {
       if (error) {
         throw error;
       };
