@@ -22,13 +22,11 @@ exports.home = function (request, response) {
 };
 
 exports.page = function (request, response) {
-  var _url = request.url;
-  var queryData = url.parse(_url, true).query;
   db.query('SELECT * FROM topic', function (error, topics) {
     if (error) {
       throw error;
     }
-    db.query('SELECT author.*, topic.* FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [queryData.id], function (error2, topic) {
+    db.query('SELECT author.*, topic.* FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [request.params.pageId], function (error2, topic) {
       if (error2) {
         throw error2;
       };
@@ -49,8 +47,7 @@ exports.page = function (request, response) {
           <p><input type="submit" value="delete"></p>
         </form>`;
       var html = template.HTML(title, list, body, control);
-      response.writeHead(200);
-      response.end(html);
+      response.send(html);
     });
   });
 };

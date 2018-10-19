@@ -5,6 +5,8 @@ const topic = require('./lib/topic')
 
 app.get('/', (req, res) => (topic.home(req, res)))
 
+app.get('/page/:pageId', (req, res) => topic.page(req, res))
+
 app.listen(port, () => console.log('Example app listening on port ${port}!'))
 
 /*
