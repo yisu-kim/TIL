@@ -4,11 +4,20 @@ const port = 3000
 const bodyParser = require('body-parser')
 const db = require('./lib/db')
 const helmet = require('helmet')
+var session = require('express-session')
+var FileStore = require('session-file-store')(session)
 
 app.use(helmet())
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
-app.get('*', (req, res, next) =>  {
+app.use(session({
+  secret: 'asadlfkj!@#!@#dfgasdg',
+  resave: false,
+  saveUninitialized: true,
+  store: new FileStore()
+}))
+
+app.get('*', (req, res, next) => {
   db.query('SELECT * FROM topic', function (err, topics) {
     if (err) {
       next(err);

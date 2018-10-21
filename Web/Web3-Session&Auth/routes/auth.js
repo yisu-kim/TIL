@@ -67,7 +67,9 @@ function login_process(request, response) {
   var email = post.email;
   var password = post.password;
   if (email === authData.email && password === authData.password) {
-    response.send('Login sucess!');
+    request.session.is_logined = true;
+    request.session.nickname = authData.nickname;
+    response.redirect('/');
   } else {
     response.send('Who?');
   }
