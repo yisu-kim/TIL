@@ -3,6 +3,7 @@ const router = express.Router()
 const sanitizeHtml = require('sanitize-html');
 const template = require('../lib/template');
 const db = require('../lib/db');
+const auth = require('../lib/auth')
 
 router.get('/create', (req, res) => create(req, res))
 router.post('/create', (req, res) => create_process(req, res))
@@ -32,7 +33,7 @@ function page(request, response, next) {
           <p><input type="hidden" name="id" value=${id}></p>
           <p><input type="submit" value="delete"></p>
         </form>`;
-      var html = template.HTML(title, list, body, control);
+      var html = template.HTML(title, list, body, auth.statusUI(request, response), control);
       response.send(html);
     }
   });
@@ -52,7 +53,7 @@ function create(request, response) {
           <p>${template.authorSelect(authors)}</p>
           <p><input type="submit" value="create"></p>
       </form>`;
-    var html = template.HTML(title, list, body);
+    var html = template.HTML(title, list, body, auth.statusUI(request, response));
     response.send(html);
   });
 }
@@ -96,7 +97,7 @@ function update(request, response) {
           <p><input type="submit" value="update"></p>
         </form>`;
       var control = '<a href="/topic/create">create</a>';
-      var html = template.HTML(title, list, body, control);
+      var html = template.HTML(title, list, body, auth.statusUI(request, response), control);
       response.send(html);
     });
   });
