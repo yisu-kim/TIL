@@ -15,16 +15,19 @@ db.defaults({ topic: [], author: [] }).write();
 //   .push({ id: 1, title: 'lowdb', description: 'lowdb is ...', author: 1 })
 //   .write();
 // db.get('topic')
-//   .push({ id: 1, title: 'mysql', description: 'mysql is ...', author: 1 })
+//   .push({ id: 2, title: 'mysql', description: 'mysql is ...', author: 1 })
 //   .write();
 // console.log(
 //   db.get('topic')
 //     .find({ title: 'lowdb', author: 1 })
 //     .value()
 // );
+// db.get('topic')
+//   .find({ title: 'mysql' })
+//   .assign({ title: 'Mysql & MariaDB' })
+//   .write();
 db.get('topic')
-  .find({ title: 'mysql' })
-  .assign({ title: 'Mysql & MariaDB' })
+  .remove({ title: 'Mysql & MariaDB' })
   .write();
 
 const server = http.createServer((req, res) => {
