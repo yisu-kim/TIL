@@ -25,7 +25,8 @@ function login(request, response) {
 }
 
 function logout(request, response) {
-  request.session.destroy(function (err) {
+  request.logout();
+  request.session.save(function () {
     response.redirect('/');
   })
 }
