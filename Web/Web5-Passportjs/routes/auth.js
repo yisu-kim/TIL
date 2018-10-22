@@ -4,14 +4,8 @@ const template = require('../lib/template');
 const db = require('../lib/db');
 
 router.get('/login', (req, res) => login(req, res))
-router.post('/login', (req, res) => login_process(req, res))
+// router.post('/login', (req, res) => login_process(req, res))
 router.get('/logout', (req, res) => logout(req, res))
-
-var authData = {
-  email: 'egoing777@gmail.com',
-  password: '1234',
-  nickname: 'egoing'
-}
 
 function login(request, response) {
   db.query('SELECT * FROM author', function (error, authors) {
@@ -21,7 +15,7 @@ function login(request, response) {
     var title = 'Login';
     var list = template.list(request.list);
     var body = `
-      <form action="/auth/login" method="post">
+      <form action="/auth/login_process" method="post">
         <p><input type="text" name="email" placeholder="email"></p>
         <p><input type="password" name="password" placeholder="password"></p>
         <p><input type="submit" value="login"></p>
