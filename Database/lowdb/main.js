@@ -17,11 +17,16 @@ db.defaults({ topic: [], author: [] }).write();
 // db.get('topic')
 //   .push({ id: 1, title: 'mysql', description: 'mysql is ...', author: 1 })
 //   .write();
-console.log(
-  db.get('topic')
-    .find({ title: 'lowdb', author: 1 })
-    .value()
-);
+// console.log(
+//   db.get('topic')
+//     .find({ title: 'lowdb', author: 1 })
+//     .value()
+// );
+db.get('topic')
+  .find({ title: 'mysql' })
+  .assign({ title: 'Mysql & MariaDB' })
+  .write();
+
 const server = http.createServer((req, res) => {
   fs.readFile('./web.html', (err, data) => {
     res.statusCode = 200;
