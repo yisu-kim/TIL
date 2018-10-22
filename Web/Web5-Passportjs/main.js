@@ -6,6 +6,7 @@ const db = require('./lib/db')
 const helmet = require('helmet')
 var session = require('express-session')
 var FileStore = require('session-file-store')(session)
+var flash = require('connect-flash')
 
 app.use(helmet())
 app.use(express.static('public'))
@@ -18,6 +19,7 @@ app.use(session({
   saveUninitialized: true,
   store: new FileStore()
 }))
+app.use(flash());
 
 var authData = {
   email: 'egoing777@gmail.com',
@@ -47,7 +49,7 @@ passport.use(new LocalStrategy(
   function (username, password, done) {
     if (username === authData.email) {
       if (password === authData.password) {
-        return done(null, authData);
+        return done(null, authData, { message: `${authData.nickname}` });
       } else {
         return done(null, false, { message: 'Incorrect password.' });
       }
@@ -60,7 +62,9 @@ passport.use(new LocalStrategy(
 app.post('/auth/login_process',
   passport.authenticate('local', {
     successRedirect: '/',
-    failureRedirect: '/auth/login'
+    failureRedirect: '/auth/login',
+    failureFlash: true,
+    successFlash: true
   })
 );
 

@@ -7,6 +7,11 @@ router.get('/login', (req, res) => login(req, res))
 router.get('/logout', (req, res) => logout(req, res))
 
 function login(request, response) {
+  var fmsg = request.flash();
+  var feedback = '';
+  if (fmsg.error) {
+    feedback = fmsg.error[0];
+  }
   db.query('SELECT * FROM author', function (error, authors) {
     if (error) {
       throw error;
@@ -14,6 +19,7 @@ function login(request, response) {
     var title = 'Login';
     var list = template.list(request.list);
     var body = `
+      <div style="color:red;">${feedback}</div>
       <form action="/auth/login_process" method="post">
         <p><input type="text" name="email" placeholder="email"></p>
         <p><input type="password" name="password" placeholder="password"></p>

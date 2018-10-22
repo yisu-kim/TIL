@@ -6,8 +6,15 @@ const auth = require('../lib/auth')
 router.get('/', (req, res) => home(req, res))
 
 function home(request, response) {
+  var fmsg = request.flash();
+  var feedback = '';
+  if (fmsg.success) {
+    feedback = fmsg.success[0];
+  } else {
+    feedback = 'web';
+  }
   var title = 'Welcome';
-  var description = 'Hello, web!';
+  var description = `Hello, ${feedback}!`;
   var list = template.list(request.list);
   var control = '<a href="/topic/create">create</a>';
   var body = `
