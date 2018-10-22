@@ -6,6 +6,7 @@ const db = require('../lib/db');
 
 router.get('/login', (req, res) => login(req, res))
 router.post('/login', (req, res) => login_process(req, res))
+router.get('/logout', (req, res) => logout(req, res))
 
 var authData = {
   email: 'egoing777@gmail.com',
@@ -73,6 +74,12 @@ function login_process(request, response) {
   } else {
     response.send('Who?');
   }
+}
+
+function logout(request, response) {
+  request.session.destroy(function(err) {
+    response.redirect('/');
+  })
 }
 
 /*
