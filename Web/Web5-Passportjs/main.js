@@ -47,16 +47,12 @@ passport.use(new LocalStrategy(
   },
   function (username, password, done) {
     if (username === authData.email) {
-      console.log('correct username');
       if (password === authData.password) {
-        console.log('correct password');
         return done(null, authData);
       } else {
-        console.log('incorrect password');
         return done(null, false, { message: 'Incorrect password.' });
       }
     } else {
-      console.log('incorrect username');
       return done(null, false, { message: 'Incorrect username.' });
     }
   }
