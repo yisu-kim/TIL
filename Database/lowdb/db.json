@@ -3,12 +3,14 @@
     {
       "id": 1,
       "title": "lowdb",
-      "description": "lowdb is ..."
+      "description": "lowdb is ...",
+      "author": 1
     },
     {
       "id": 1,
       "title": "mysql",
-      "description": "mysql is ..."
+      "description": "mysql is ...",
+      "author": 1
     }
   ],
   "author": [
