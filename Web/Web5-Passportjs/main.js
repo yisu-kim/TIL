@@ -19,6 +19,15 @@ app.use(session({
   store: new FileStore()
 }))
 
+var passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
+app.post('/auth/login_process',
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/auth/login'
+  })
+);
+
 app.get('*', (req, res, next) => {
   db.query('SELECT * FROM topic', function (err, topics) {
     if (err) {

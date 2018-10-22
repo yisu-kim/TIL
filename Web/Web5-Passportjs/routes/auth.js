@@ -30,7 +30,7 @@ function login(request, response) {
     response.send(html);
   });
 }
-
+/*
 function login_process(request, response) {
   var post = request.body;
   var email = post.email;
@@ -45,7 +45,7 @@ function login_process(request, response) {
     response.send('Who?');
   }
 }
-
+*/
 function logout(request, response) {
   request.session.destroy(function (err) {
     response.redirect('/');
