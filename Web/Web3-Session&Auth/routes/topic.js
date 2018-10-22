@@ -40,6 +40,10 @@ function page(request, response, next) {
 };
 
 function create(request, response) {
+  if (!auth.isOwner(request, response)) {
+    response.redirect('/');
+    return false;
+  }
   db.query('SELECT * FROM author', function (error2, authors) {
     if (error2) {
       throw error2;
@@ -59,6 +63,10 @@ function create(request, response) {
 }
 
 function create_process(request, response) {
+  if (!auth.isOwner(request, response)) {
+    response.redirect('/');
+    return false;
+  }
   var post = request.body;
   console.log(request.body);
   var title = post.title;
@@ -75,6 +83,10 @@ function create_process(request, response) {
 }
 
 function update(request, response) {
+  if (!auth.isOwner(request, response)) {
+    response.redirect('/');
+    return false;
+  }
   db.query('SELECT * FROM topic WHERE id=?', [request.params.pageId], function (error2, topic) {
     if (error2) {
       throw error2;
@@ -104,6 +116,10 @@ function update(request, response) {
 }
 
 function update_process(request, response) {
+  if (!auth.isOwner(request, response)) {
+    response.redirect('/');
+    return false;
+  }
   var post = request.body;
   var id = post.id;
   var title = post.title;
@@ -120,6 +136,10 @@ function update_process(request, response) {
 }
 
 function delete_process(request, response) {
+  if (!auth.isOwner(request, response)) {
+    response.redirect('/');
+    return false;
+  }
   var post = request.body;
   var id = post.id;
   db.query(`DELETE FROM topic WHERE id=?`, [id], function (error) {
