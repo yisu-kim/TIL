@@ -23,7 +23,14 @@
   //   .find({ title: 'mysql' })
   //   .assign({ title: 'Mysql & MariaDB' })
   //   .write();
+  // db.get('topic')
+  //   .remove({ title: 'Mysql & MariaDB' })
+  //   .write();
+  var authorId = shortid.generate();
+  db.get('author')
+    .push({ id: authorId, name: 'taeho', profile: 'data scientist' })
+    .write();
   db.get('topic')
-    .remove({ title: 'Mysql & MariaDB' })
+    .push({ id: shortid.generate(), title: 'PostgreSQL', description: 'PostgreSQL is ...', author: authorId })
     .write();
 </script>

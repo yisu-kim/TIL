@@ -2,6 +2,8 @@ const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('db.json');
 const db = low(adapter);
+const shortid = require('shortid');
+
 const http = require('http');
 const hostname = 'localhost';
 const port = 3000;
@@ -26,8 +28,15 @@ db.defaults({ topic: [], author: [] }).write();
 //   .find({ title: 'mysql' })
 //   .assign({ title: 'Mysql & MariaDB' })
 //   .write();
+// db.get('topic')
+//   .remove({ title: 'Mysql & MariaDB' })
+//   .write();
+var authorId = shortid.generate();
+db.get('author')
+  .push({ id: authorId, name: 'taeho', profile: 'data scientist' })
+  .write();
 db.get('topic')
-  .remove({ title: 'Mysql & MariaDB' })
+  .push({ id: shortid.generate(), title: 'PostgreSQL', description: 'PostgreSQL is ...', author: authorId })
   .write();
 
 const server = http.createServer((req, res) => {
