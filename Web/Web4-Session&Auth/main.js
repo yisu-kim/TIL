@@ -11,6 +11,8 @@ app.use(helmet())
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
+  HttpOnly: true,
+  secure: true,
   secret: 'asadlfkj!@#!@#dfgasdg',
   resave: false,
   saveUninitialized: true,
