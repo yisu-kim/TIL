@@ -4,4 +4,5 @@
 <script>
     var adapter = new LocalStorage('db')
     var db = low(adapter)
+    db.defaults({ topic: [], author: [] }).write();
 </script>
