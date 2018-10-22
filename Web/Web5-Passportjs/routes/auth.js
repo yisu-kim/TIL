@@ -4,7 +4,6 @@ const template = require('../lib/template');
 const db = require('../lib/db');
 
 router.get('/login', (req, res) => login(req, res))
-// router.post('/login', (req, res) => login_process(req, res))
 router.get('/logout', (req, res) => logout(req, res))
 
 function login(request, response) {
@@ -24,22 +23,7 @@ function login(request, response) {
     response.send(html);
   });
 }
-/*
-function login_process(request, response) {
-  var post = request.body;
-  var email = post.email;
-  var password = post.password;
-  if (email === authData.email && password === authData.password) {
-    request.session.is_logined = true;
-    request.session.nickname = authData.nickname;
-    request.session.save(function () {
-      response.redirect('/');
-    });
-  } else {
-    response.send('Who?');
-  }
-}
-*/
+
 function logout(request, response) {
   request.session.destroy(function (err) {
     response.redirect('/');
