@@ -81,14 +81,16 @@ module.exports = function (passport) {
 
   function register_process(request, response) {
     var post = request.body;
-    var id = shortid.generate();
-    var email = post.email;
-    var password = post.password;
+    var user = {
+      id: shortid.generate(),
+      email: post.email,
+      password: post.password,
+      displayName: post.displayName
+    };
     var password2 = post.password2;
-    var displayName = post.displayName;
-    db.query(`SELECT email FROM USERS WHERE email=?`, [email], function (error, result) {
+    db.query(`SELECT email FROM USERS WHERE email=?`, [user.email], function (error, result) {
       if (!result[0]) {
-        if (password === password2) {
+        if (user.password === password2) {
           /*
           lowdb.get('users').push({
             email: email,
@@ -97,12 +99,14 @@ module.exports = function (passport) {
           }).write();
           */
           db.query(`INSERT INTO users (id, email, password, displayName) VALUES (?, ?, ?, ?)`,
-            [id, email, password, displayName],
+            [user.id, user.email, user.password, user.displayName],
             function (error, result) {
               if (error) {
                 throw error;
               }
-              response.redirect('/');
+              request.login(user, function (err) {
+                response.redirect('/');
+              })
             }
           );
         } else {
