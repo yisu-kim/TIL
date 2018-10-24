@@ -1,4 +1,5 @@
 var db = require('./db')
+var bcrypt = require('bcryptjs')
 
 module.exports = function (app) {
   var passport = require('passport')
@@ -20,14 +21,23 @@ module.exports = function (app) {
       passwordField: 'password'
     },
     function (email, password, done) {
-      db.query(`SELECT * FROM users WHERE email=? AND password=?`, [email, password], function (err, user) {
+      db.query(`SELECT * FROM users WHERE email=?`, [email], function (err, user) {
         if (user[0]) {
-          return done(null, user[0], {
-            message: `${user[0].displayName}`
-          });
+          bcrypt.compare(password, user[0].password, function (err, res) {
+            if (res) {
+              return done(null, user[0], {
+                message: `${user[0].displayName}`
+              });
+            } else {
+              return done(null, false, {
+                message: 'This password is not correct'
+              });
+            }
+
+          })
         } else {
           return done(null, false, {
-            message: 'Incorrect user information.'
+            message: "This email does not exist"
           });
         }
       })

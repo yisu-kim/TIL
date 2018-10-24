@@ -3,6 +3,7 @@ const router = express.Router()
 const template = require('../lib/template');
 const db = require('../lib/db');
 const shortid = require('shortid')
+const bcrypt = require('bcryptjs')
 /*
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
@@ -81,16 +82,9 @@ module.exports = function (passport) {
 
   function register_process(request, response) {
     var post = request.body;
-    var user = {
-      id: shortid.generate(),
-      email: post.email,
-      password: post.password,
-      displayName: post.displayName
-    };
-    var password2 = post.password2;
-    db.query(`SELECT email FROM USERS WHERE email=?`, [user.email], function (error, result) {
+    db.query(`SELECT email FROM USERS WHERE email=?`, [post.email], function (error, result) {
       if (!result[0]) {
-        if (user.password === password2) {
+        if (post.password === post.password2) {
           /*
           lowdb.get('users').push({
             email: email,
@@ -98,17 +92,27 @@ module.exports = function (passport) {
             displayName: displayName
           }).write();
           */
-          db.query(`INSERT INTO users (id, email, password, displayName) VALUES (?, ?, ?, ?)`,
-            [user.id, user.email, user.password, user.displayName],
-            function (error, result) {
-              if (error) {
-                throw error;
-              }
-              request.login(user, function (err) {
-                response.redirect('/');
-              })
-            }
-          );
+          bcrypt.genSalt(10, function (err, salt) {
+            bcrypt.hash(post.password, salt, function (err, hash) {
+              var user = {
+                id: shortid.generate(),
+                email: post.email,
+                password: hash,
+                displayName: post.displayName
+              };
+              db.query(`INSERT INTO users (id, email, password, displayName) VALUES (?, ?, ?, ?)`,
+                [user.id, user.email, user.password, user.displayName],
+                function (error, result) {
+                  if (error) {
+                    throw error;
+                  }
+                  request.login(user, function (err) {
+                    response.redirect('/');
+                  })
+                }
+              );
+            })
+          })
         } else {
           request.flash('error', 'Password must same!')
           request.session.save(function () {
