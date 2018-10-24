@@ -17,20 +17,18 @@ function page(request, response, next) {
     if (topic.length === 0) {
       next(error);
     } else {
-      var id = topic[0].id;
       var title = sanitizeHtml(topic[0].title);
       var description = sanitizeHtml(topic[0].description);
-      var author = sanitizeHtml(topic[0].displayName);
       var list = template.list(request.list);
       var body = `
         <h2>${title}</h2>
         ${description}
-        <p>by ${author}</p>`;
+        <p>by ${topic[0].displayName}</p>`;
       var control = `
         <a href="/topic/create">create</a>
-        <a href="/topic/update/${id}">update</a>
+        <a href="/topic/update/${topic[0].id}">update</a>
         <form action = "/topic/delete" method = "post" >
-          <p><input type="hidden" name="id" value=${id}></p>
+          <p><input type="hidden" name="id" value=${topic[0].id}></p>
           <p><input type="submit" value="delete"></p>
         </form>`;
       var html = template.HTML(title, list, body, auth.statusUI(request, response), control);
@@ -85,31 +83,31 @@ function update(request, response) {
     response.redirect('/');
     return false;
   }
-  db.query('SELECT * FROM topic WHERE id=?', [request.params.pageId], function (error2, topic) {
-    if (error2) {
-      throw error2;
+  db.query('SELECT * FROM topic WHERE id=?', [request.params.pageId], function (error, topic) {
+    if (error) {
+      throw error;
     };
-    db.query('SELECT * FROM author', function (error3, authors) {
-      if (error3) {
-        throw error3;
-      };
-      var id = topic[0].id;
-      var title = sanitizeHtml(topic[0].title);
-      var description = sanitizeHtml(topic[0].description);
-      var author_id = sanitizeHtml(topic[0].author_id);
-      var list = template.list(request.list);
-      var body = `
+    if (topic[0].author_id !== request.user.id) {
+      request.flash('error', 'Not yours!');
+      request.session.save(function () {
+        response.redirect('/');
+      })
+      return false;
+    }
+    var title = sanitizeHtml(topic[0].title);
+    var description = sanitizeHtml(topic[0].description);
+    var list = template.list(request.list);
+    var body = `
         <form action="/topic/update" method="post">
-          <p><input type="hidden" name="id" value=${id}></p>
+          <p><input type="hidden" name="id" value=${topic[0].id}></p>
           <p><input type="text" name="title" placeholder="title" value=${title}></p>
           <p><textarea name="description" placeholder="description">${description}</textarea></p>
-          <p>${template.authorSelect(authors, author_id)}</p>
+          <p><input type="hidden" name="author_id" value=${topic[0].author_id}></p>
           <p><input type="submit" value="update"></p>
         </form>`;
-      var control = '<a href="/topic/create">create</a>';
-      var html = template.HTML(title, list, body, auth.statusUI(request, response), control);
-      response.send(html);
-    });
+    var control = '<a href="/topic/create">create</a>';
+    var html = template.HTML(title, list, body, auth.statusUI(request, response), control);
+    response.send(html);
   });
 }
 
@@ -119,17 +117,20 @@ function update_process(request, response) {
     return false;
   }
   var post = request.body;
-  var id = post.id;
-  var title = post.title;
-  var description = post.description;
-  var
-    author_id = post.author_id;
+  console.log(post.author_id, request.user.id)
+  if (post.author_id !== request.user.id) {
+    request.flash('error', 'Not yours!');
+    request.session.save(function () {
+      response.redirect('/');
+    })
+    return false;
+  }
   db.query(`UPDATE topic SET title=?, description=?, author_id=? WHERE id=?`,
-    [title, description, author_id, id], function (error) {
+    [post.title, post.description, post.author_id, post.id], function (error) {
       if (error) {
         throw error;
       };
-      response.redirect(`/topic/${id}`);
+      response.redirect(`/topic/${post.id}`);
     });
 }
 
