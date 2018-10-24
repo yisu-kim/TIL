@@ -10,13 +10,17 @@ function home(request, response) {
   var feedback = '';
   if (fmsg.success) {
     feedback = fmsg.success[0];
-  } else {
-    feedback = 'web';
+  }
+  if (fmsg.error) {
+    feedback = fmsg.error[0];
   }
   var title = 'Welcome';
-  var description = `Hello, ${feedback}!`;
+  var description = `Hello, web!`;
   var list = template.list(request.list);
-  var control = '<a href="/topic/create">create</a>';
+  var control = `
+    <p><style "color:red;">${feedback}</style></p>
+    <p><a href="/topic/create">create</a></p>
+    `;
   var body = `
       <h2>${title}</h2>
       ${description}

@@ -29,6 +29,7 @@ function page(request, response, next) {
         <a href="/topic/update/${topic[0].id}">update</a>
         <form action = "/topic/delete" method = "post" >
           <p><input type="hidden" name="id" value=${topic[0].id}></p>
+          <p><input type="hidden" name="author_id" value=${topic[0].author_id}></p>
           <p><input type="submit" value="delete"></p>
         </form>`;
       var html = template.HTML(title, list, body, auth.statusUI(request, response), control);
@@ -140,8 +141,14 @@ function delete_process(request, response) {
     return false;
   }
   var post = request.body;
-  var id = post.id;
-  db.query(`DELETE FROM topic WHERE id=?`, [id], function (error) {
+  if (post.author_id !== request.user.id) {
+    request.flash('error', 'Not yours!');
+    request.session.save(function () {
+      response.redirect('/');
+    })
+    return false;
+  }
+  db.query(`DELETE FROM topic WHERE id=?`, [post.id], function (error) {
     if (error) {
       throw error;
     };
