@@ -10,7 +10,7 @@ module.exports = {
     }
     list = list + '</ul>';
     return list;
-  }, HTML: function (title, list, body, authStatusUI = '<a href="/auth/login">login</a>', control = '') {
+  }, HTML: function (title, list, body, authStatusUI = '<a href="/auth/login">login</a> | <a href="/auth/register">Register</a>', control = '') {
     return `
       <!doctype html>
       <html>
