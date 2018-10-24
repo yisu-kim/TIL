@@ -3,10 +3,17 @@ const router = express.Router()
 const template = require('../lib/template');
 const db = require('../lib/db');
 
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+const adapter = new FileSync('./lib/db.json')
+const lowdb = low(adapter)
+lowdb.defaults({ users: [] }).write();
+
 module.exports = function (passport) {
   router.get('/login', (req, res) => login(req, res))
   router.post('/login_process', (req, res) => login_process(req, res))
   router.get('/register', (req, res) => register(req, res))
+  router.post('/register_process', (req, res) => register_process(req, res))
   router.get('/logout', (req, res) => logout(req, res))
 
   function login(request, response) {
@@ -68,6 +75,27 @@ module.exports = function (passport) {
       var html = template.HTML(title, list, body);
       response.send(html);
     });
+  }
+
+  function register_process(request, response) {
+    var post = request.body;
+    var email = post.email;
+    var password = post.password;
+    var displayName = post.displayName;
+    lowdb.get('users').push({
+      email: email,
+      password: password,
+      displayName: displayName
+    }).write();
+    db.query(`INSERT INTO users (email, password, displayName) VALUES (?, ?, ?)`,
+      [email, password, displayName],
+      function (error, result) {
+        if (error) {
+          throw error;
+        }
+        response.redirect('/');
+      }
+    );
   }
 
   function logout(request, response) {
