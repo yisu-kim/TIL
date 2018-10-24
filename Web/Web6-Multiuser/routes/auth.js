@@ -68,10 +68,10 @@ module.exports = function (passport) {
       var body = `
         <div style="color:red;">${feedback}</div>
         <form action="/auth/register_process" method="post">
-          <p><input type="text" name="email" placeholder="email"></p>
-          <p><input type="password" name="password" placeholder="password"></p>
-          <p><input type="password" name="password2" placeholder="password"></p>
-          <p><input type="text" name="displayName" placeholder="display name"></p>
+          <p><input type="text" name="email" placeholder="email" required></p>
+          <p><input type="password" name="password" placeholder="password" required></p>
+          <p><input type="password" name="password2" placeholder="password" required></p>
+          <p><input type="text" name="displayName" placeholder="display name" required></p>
           <p><input type="submit" value="register"></p>
         </form>`;
       var html = template.HTML(title, list, body);
@@ -86,27 +86,38 @@ module.exports = function (passport) {
     var password = post.password;
     var password2 = post.password2;
     var displayName = post.displayName;
-    if (password === password2) {
-      /*
-      lowdb.get('users').push({
-        email: email,
-        password: password,
-        displayName: displayName
-      }).write();
-      */
-      db.query(`INSERT INTO users (id, email, password, displayName) VALUES (?, ?, ?, ?)`,
-        [id, email, password, displayName],
-        function (error, result) {
-          if (error) {
-            throw error;
-          }
-          response.redirect('/');
+    db.query(`SELECT email FROM USERS WHERE email=?`, [email], function (error, result) {
+      if (!result[0]) {
+        if (password === password2) {
+          /*
+          lowdb.get('users').push({
+            email: email,
+            password: password,
+            displayName: displayName
+          }).write();
+          */
+          db.query(`INSERT INTO users (id, email, password, displayName) VALUES (?, ?, ?, ?)`,
+            [id, email, password, displayName],
+            function (error, result) {
+              if (error) {
+                throw error;
+              }
+              response.redirect('/');
+            }
+          );
+        } else {
+          request.flash('error', 'Password must same!')
+          request.session.save(function () {
+            response.redirect('/auth/register')
+          })
         }
-      );
-    } else {
-      request.flash('error', 'Password must same!')
-      response.redirect('/auth/register')
-    }
+      } else {
+        request.flash('error', 'User already exists.')
+        request.session.save(function () {
+          response.redirect('/auth/register')
+        })
+      }
+    })
   }
 
   function logout(request, response) {
