@@ -13,14 +13,14 @@ router.post('/delete', (req, res) => delete_process(req, res))
 router.get('/:pageId', (req, res, next) => page(req, res, next))
 
 function page(request, response, next) {
-  db.query('SELECT author.*, topic.* FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?', [request.params.pageId], function (error, topic) {
+  db.query('SELECT users.*, topic.* FROM topic LEFT JOIN users ON topic.author_id=users.id WHERE topic.id=?', [request.params.pageId], function (error, topic) {
     if (topic.length === 0) {
       next(error);
     } else {
       var id = topic[0].id;
       var title = sanitizeHtml(topic[0].title);
       var description = sanitizeHtml(topic[0].description);
-      var author = sanitizeHtml(topic[0].name);
+      var author = sanitizeHtml(topic[0].displayName);
       var list = template.list(request.list);
       var body = `
         <h2>${title}</h2>
@@ -44,18 +44,17 @@ function create(request, response) {
     response.redirect('/');
     return false;
   }
-  db.query('SELECT * FROM author', function (error2, authors) {
-    if (error2) {
-      throw error2;
+  db.query('SELECT * FROM author', function (error, authors) {
+    if (error) {
+      throw error;
     };
     var title = 'Create';
     var list = template.list(request.list);
     var body = `
       <form action="/topic/create" method="post">
-      <p><input type="text" name="title" placeholder="title"></p>
-      <p><textarea name="description" placeholder="description"></textarea></p>
-          <p>${template.authorSelect(authors)}</p>
-          <p><input type="submit" value="create"></p>
+        <p><input type="text" name="title" placeholder="title"></p>
+        <p><textarea name="description" placeholder="description"></textarea></p>
+        <p><input type="submit" value="create"></p>
       </form>`;
     var html = template.HTML(title, list, body, auth.statusUI(request, response));
     response.send(html);
@@ -68,12 +67,11 @@ function create_process(request, response) {
     return false;
   }
   var post = request.body;
-  console.log(request.body);
   var title = post.title;
   var description = post.description;
-  var author_id = post.author_id;
+  var user_id = request.user.id;
   db.query(`INSERT INTO topic (title, description, created, author_id) VALUES (?, ?, NOW(), ?)`,
-    [title, description, author_id],
+    [title, description, user_id],
     function (error, result) {
       if (error) {
         throw error;
